@@ -142,24 +142,9 @@
 
 
 
-<br>
-<button id="randomButton" onclick="window.location.href='https://amouroff.github.io/amouroff/rusdiscoversnextpage.html'">
+<button id="randomButton" onclick="top.location.href='https://amouroff.github.io/amouroff/rusdiscoversnextpage.html'">
   NEXT PAGE
 </button>
-
-<script>
-    function generateRandomString(length) {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return result;
-    }
-
-    document.getElementById('randomButton').textContent = generateRandomString(10);
-</script>
-<br>
 
 
   <!-- bot -->
