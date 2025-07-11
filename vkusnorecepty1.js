@@ -1,14 +1,14 @@
   const urls = [
-    "https://www.nobletouch.online/2024/09/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post_26.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post_73.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post_34.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post_79.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post_14.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post_4.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post_59.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobletouch.online/2024/09/blog-post_39.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    "https://www.nobletouch.online/2024/09/10.html",
+    "https://www.nobletouch.online/2024/09/blog-post.html",
+    "https://www.nobletouch.online/2024/09/blog-post_26.html",
+    "https://www.nobletouch.online/2024/09/blog-post_73.html",
+    "https://www.nobletouch.online/2024/09/blog-post_34.html",
+    "https://www.nobletouch.online/2024/09/blog-post_79.html",
+    "https://www.nobletouch.online/2024/09/blog-post_14.html",
+    "https://www.nobletouch.online/2024/09/blog-post_4.html",
+    "https://www.nobletouch.online/2024/09/blog-post_59.html",
+    "https://www.nobletouch.online/2024/09/blog-post_39.html"
   ];
 
   const sources = [
