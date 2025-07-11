@@ -1,14 +1,14 @@
   const urls = [
-    "https://www.legacyspot.online/2025/03/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/blog-post_11.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/blog-post_32.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/xxi.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/blog-post_76.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/blog-post_61.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/blog-post_75.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/blog-post_26.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/blog-post_17.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacyspot.online/2025/03/blog-post_22.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    "https://www.legacyspot.online/2025/03/blog-post.html",
+    "https://www.legacyspot.online/2025/03/blog-post_11.html",
+    "https://www.legacyspot.online/2025/03/blog-post_32.html",
+    "https://www.legacyspot.online/2025/03/xxi.html",
+    "https://www.legacyspot.online/2025/03/blog-post_76.html",
+    "https://www.legacyspot.online/2025/03/blog-post_61.html",
+    "https://www.legacyspot.online/2025/03/blog-post_75.html",
+    "https://www.legacyspot.online/2025/03/blog-post_26.html",
+    "https://www.legacyspot.online/2025/03/blog-post_17.html",
+    "https://www.legacyspot.online/2025/03/blog-post_22.html"
   ];
 
   const sources = [
@@ -31,5 +31,6 @@
     document.body.appendChild(iframe);
   }
 
+  // Загружаем iframe сразу и повторяем каждые 30 сек
   loadIframe();
   setInterval(loadIframe, 30000);
