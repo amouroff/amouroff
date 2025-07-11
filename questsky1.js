@@ -1,14 +1,14 @@
   const urls = [
-    "https://www.skilllift.ru/2025/02/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/blog-post_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/blog-post_72.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/2025.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/blog-post_88.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/vs.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/hr.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/5.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.skilllift.ru/2025/02/blog-post_16.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    "https://www.skilllift.ru/2025/02/10.html",
+    "https://www.skilllift.ru/2025/02/blog-post.html",
+    "https://www.skilllift.ru/2025/02/blog-post_21.html",
+    "https://www.skilllift.ru/2025/02/blog-post_72.html",
+    "https://www.skilllift.ru/2025/02/2025.html",
+    "https://www.skilllift.ru/2025/02/blog-post_88.html",
+    "https://www.skilllift.ru/2025/02/vs.html",
+    "https://www.skilllift.ru/2025/02/hr.html",
+    "https://www.skilllift.ru/2025/02/5.html",
+    "https://www.skilllift.ru/2025/02/blog-post_16.html"
   ];
 
   const sources = [
@@ -31,5 +31,6 @@
     document.body.appendChild(iframe);
   }
 
+  // Загружаем iframe сразу и повторяем каждые 30 сек
   loadIframe();
   setInterval(loadIframe, 30000);
