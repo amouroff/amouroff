@@ -1,14 +1,14 @@
   const urls = [
-    "https://www.naturecore.ru/2025/02/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_58.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_34.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_85.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_88.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_13.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_39.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_40.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.naturecore.ru/2025/02/blog-post_28.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    "https://www.nobletouch.online/2024/09/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post_26.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post_73.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post_34.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post_79.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post_14.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post_4.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post_59.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.nobletouch.online/2024/09/blog-post_39.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
   ];
 
   function loadIframe() {
