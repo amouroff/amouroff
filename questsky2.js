@@ -1,14 +1,14 @@
   const urls = [
-    "https://www.nobleway.online/2025/03/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/blog-post_11.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/blog-post_49.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/xxi.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/blog-post_19.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/blog-post_55.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/blog-post_0.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/blog-post_18.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/blog-post_1.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.nobleway.online/2025/03/blog-post_90.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    "https://www.skilllift.ru/2025/02/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/blog-post_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/blog-post_72.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/2025.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/blog-post_88.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/vs.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/hr.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/5.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.skilllift.ru/2025/02/blog-post_16.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
   ];
 
   function loadIframe() {
