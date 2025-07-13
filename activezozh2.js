@@ -1,14 +1,14 @@
   const urls = [
-    "https://www.supremenet.online/2024/11/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/10-2024.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/seo.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/blog-post_3.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/blog-post_30.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/blog-post_20.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/blog-post_33.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/blog-post_18.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/blog-post_37.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.supremenet.online/2024/11/blog-post_36.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    "https://www.majesticway.online/2024/08/python.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/10-javascript.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/2024.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/sql.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/blog-post_20.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/blog-post_52.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/blog-post_97.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/ai.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.majesticway.online/2024/08/5-2024.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
   ];
 
   function loadIframe() {
