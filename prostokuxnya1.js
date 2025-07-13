@@ -1,14 +1,14 @@
   const urls = [
-    "https://www.finvektor.ru/2025/02/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/blog-post_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/blog-post_54.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/blog-post_99.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/blog-post_20.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/blog-post_25.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/5.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/2025.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/blog-post_36.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.finvektor.ru/2025/02/2025_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    "https://www.opuselite.online/2024/08/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_27.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_79.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_24.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_95.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_5.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_68.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_46.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_77.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.opuselite.online/2024/08/blog-post_90.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
   ];
 
   function loadIframe() {
