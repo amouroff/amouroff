@@ -1,14 +1,14 @@
 const urls = [
-    "https://www.legacypath.online/2024/11/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/blog-post_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/5.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/blog-post_83.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/blog-post_71.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/blog-post_5.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/2024.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/blog-post_90.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
-    "https://www.legacypath.online/2024/11/5_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    "https://www.legacyspot.online/2025/03/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/blog-post_11.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/blog-post_32.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/xxi.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/blog-post_76.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/blog-post_61.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/blog-post_75.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/blog-post_26.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/blog-post_17.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://www.legacyspot.online/2025/03/blog-post_22.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
   ];
 
   function loadIframe() {
