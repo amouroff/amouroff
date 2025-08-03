@@ -1,0 +1,76 @@
+
+  const links = {
+    activezozh: [
+      "https://www.activezozh.ru/2024/09/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/blog-post_26.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/blog-post_51.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/blog-post_97.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/blog-post_13.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/blog-post_65.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/blog-post_64.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/5.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.activezozh.ru/2024/09/blog-post_32.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    ],
+    questsky: [
+      "https://www.questsky.info/2024/09/10-oculus-quest-vr.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/vr_15.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/oculus-quest.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/vr_18.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/vr-2025.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/vr_22.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/vr.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/10-oculus-quest.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.questsky.info/2024/09/vr-2024-quest-2.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    ],
+    russiannature: [
+      "https://www.russiannature.ru/2024/09/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_26.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_56.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_98.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_45.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_43.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_44.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_40.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_70.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.russiannature.ru/2024/09/blog-post_77.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    ],
+	vkusnorecepty: [
+      "https://www.vkusnorecepty.ru/2024/11/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/5.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/blog-post_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/blog-post_61.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/5_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/7.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/30.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/blog-post_81.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.vkusnorecepty.ru/2024/11/5_42.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    ],
+    prostokuxnya: [
+      "https://www.prostokuxnya.ru/2024/08/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post_20.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post_31.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post_49.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post_95.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post_12.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post_46.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post_94.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+      "https://www.prostokuxnya.ru/2024/08/blog-post_62.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
+    ]
+  };
+
+  function getRandomUrl(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  for (const domain in links) {
+    const iframe = document.createElement('iframe');
+    iframe.src = getRandomUrl(links[domain]);
+    iframe.width = 1;
+    iframe.height = 1;
+    iframe.style.border = "none";
+    document.body.appendChild(iframe);
+  }
