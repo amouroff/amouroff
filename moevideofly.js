@@ -1,16 +1,5 @@
-(function() {
-    var badRef = ["sex", "porn", "xxx", "bigass", "holedk", "sexbigass"];
-    var ref = document.referrer.toLowerCase();
-
-    for (var i = 0; i < badRef.length; i++) {
-        if (ref.indexOf(badRef[i]) !== -1) {
-            console.log("Реклама скрыта: плохой источник трафика");
-            return; // Не загружаем баннер
-        }
-    }
-
-    // Если реферал чистый — грузим баннер
-    var container = document.createElement("div");
+(function () {
+    const container = document.createElement("div");
     container.id = "contentroll";
     document.body.appendChild(container);
 
@@ -33,11 +22,15 @@
                 width: 445,
                 closeSecOffset: 5,
                 position: 'center-right',
-                indent: { left: 0, right: 0, top: 0, bottom: 0 },
-                positionMobile: 'bottom',
+                indent: {
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                },
+                positionMobile: 'center',
             },
         });
     };
-    document.body.appendChild(script);
-
+    document.body.append(script);
 })();
