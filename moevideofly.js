@@ -1,5 +1,4 @@
 (function() {
-    // Чёрный список — можно дополнять
     var badRef = ["sex", "porn", "xxx", "bigass", "holedk", "sexbigass"];
     var ref = document.referrer.toLowerCase();
 
@@ -40,4 +39,5 @@
         });
     };
     document.body.appendChild(script);
+
 })();
