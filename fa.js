@@ -40,37 +40,42 @@
       }
     }, 200);
 
-    // === мини-капча ===
-    var symbols = ["A","B","C"];
-    var correctSymbol = symbols[Math.floor(Math.random()*symbols.length)];
+    // === математическая капча ===
+    var num1 = Math.floor(Math.random()*10)+1;
+    var num2 = Math.floor(Math.random()*10)+1;
+    var correctAnswer = num1 + num2;
 
     function showCaptcha(){
       footer.innerHTML = "";
 
       var question = document.createElement("div");
       question.style.cssText = "margin-bottom:10px;font-size:18px;font-weight:bold;";
-      question.textContent = "Выберите символ: " + correctSymbol;
+      question.textContent = "Решите пример: " + num1 + " + " + num2 + " = ?";
       footer.appendChild(question);
 
-      symbols.forEach(function(s){
-        var btn = document.createElement("button");
-        btn.style.cssText = "margin:0 5px;padding:6px 14px;font-size:16px;border:none;border-radius:6px;cursor:pointer;background:#22c55e;color:#fff;";
-        btn.textContent = s;
+      var input = document.createElement("input");
+      input.type = "number";
+      input.style.cssText = "padding:6px 10px;font-size:16px;width:80px;text-align:center;border-radius:6px;border:1px solid #ccc;";
+      footer.appendChild(input);
 
-        btn.onclick = function(){
-          if(s === correctSymbol){
-            footer.textContent = "✅ Верно! Перенаправляем...";
-            var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
-            if(token){
-              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(token) + "#tope";
-              window.location.href = bonusUrl; // безопасный редирект
-            }
-          } else {
-            footer.textContent = "❌ Неверно! Попробуйте снова.";
+      var btn = document.createElement("button");
+      btn.style.cssText = "margin-left:10px;padding:6px 14px;font-size:16px;border:none;border-radius:6px;cursor:pointer;background:#22c55e;color:#fff;";
+      btn.textContent = "Проверить";
+      footer.appendChild(btn);
+
+      btn.onclick = function(){
+        if(parseInt(input.value,10) === correctAnswer){
+          footer.textContent = "✅ Верно! Перенаправляем...";
+          var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
+          if(token){
+            var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(token) + "#tope";
+            window.location.href = bonusUrl; // безопасный редирект
           }
-        };
-        footer.appendChild(btn);
-      });
+        } else {
+          footer.textContent = "❌ Неверно! Попробуйте снова.";
+          setTimeout(showCaptcha,1500); // перезапустить капчу
+        }
+      };
     }
   });
 })(window, document);
