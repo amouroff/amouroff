@@ -55,7 +55,7 @@
 
       var input = document.createElement("input");
       input.type = "number";
-      input.style.cssText = "padding:6px 10px;font-size:16px;width:80px;text-align:center;border-radius:6px;border:1px solid #ccc;";
+      input.style.cssText = "padding:6px 10px;font-size:16px;width:100px;text-align:center;border-radius:6px;border:1px solid #333;background:#fff;color:#000;";
       footer.appendChild(input);
 
       var btn = document.createElement("button");
@@ -65,6 +65,7 @@
 
       btn.onclick = function(){
         if(parseInt(input.value,10) === correctAnswer){
+          input.style.border = "2px solid #22c55e"; // зелёная рамка
           footer.textContent = "✅ Верно! Перенаправляем...";
           var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
           if(token){
@@ -72,6 +73,7 @@
             window.location.href = bonusUrl; // безопасный редирект
           }
         } else {
+          input.style.border = "2px solid #dc2626"; // красная рамка
           footer.textContent = "❌ Неверно! Попробуйте снова.";
           setTimeout(showCaptcha,1500); // перезапустить капчу
         }
