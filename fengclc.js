@@ -156,7 +156,7 @@
           footer.textContent = "Верно! Перенаправляем...";
           var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
           if(token){
-            var bonusUrl = "https://fastfaucet.pro/pages/utm_clicks.php?cnt=" + encodeURIComponent(token) + "#tope";
+            var bonusUrl = "https://fastfaucet.pro/pages/utm_new_clicks.php?cnt=" + encodeURIComponent(token) + "#tope";
             window.location.href = bonusUrl;
           }
         } else {
