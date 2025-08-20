@@ -8,7 +8,7 @@
   var utm_source = getParam("utm_source");
   var utm_medium = getParam("utm_medium");
   var utm_campaign = getParam("utm_campaign");
-  if (utm_source !== "yandex" || utm_medium !== "google" || utm_campaign !== "search") {
+  if (utm_source !== "google" || utm_medium !== "organic" || utm_campaign !== "search") {
     return;
   }
 
