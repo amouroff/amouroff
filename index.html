@@ -1,46 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-    
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SUCK MY DICK — Mega Animated</title>
+  <style>
+    :root{
+      --h: 200;                 /* hue (animated in JS) */
+      --sat: 90%;
+      --bg1: hsl(calc(var(--h) - 40), 70%, 8%);
+      --bg2: hsl(calc(var(--h) + 10), 80%, 12%);
+      --bg3: hsl(calc(var(--h) + 60), 90%, 8%);
+      --fg1: hsl(calc(var(--h) + 110), 100%, 60%);
+      --fg2: hsl(calc(var(--h) - 40), 100%, 65%);
+      --fg3: hsl(calc(var(--h) + 10), 100%, 70%);
+      --glow: hsla(calc(var(--h) + 120), 100%, 60%, .8);
+      --text-shadow: 0 0 10px var(--glow), 0 0 25px var(--glow), 0 0 55px var(--glow), 0 0 95px var(--glow);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; display:grid; place-items:center; overflow:hidden; color:#fff;
+      background: radial-gradient(1200px 800px at 20% 20%, var(--bg2), transparent 60%),
+                  radial-gradient(1200px 800px at 80% 80%, var(--bg3), transparent 60%),
+                  linear-gradient(120deg, var(--bg1), var(--bg2));
+      background-attachment: fixed;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";
+      filter: saturate(1.2);
+    }
 
+    /* animated conic glow layer */
+    .bgspin::before{
+      content:""; position:fixed; inset:-40vmax; pointer-events:none; z-index:-2;
+      background: conic-gradient(from 0turn, transparent 0 20%, hsla(calc(var(--h) + 40),90%,50%,.15) 25%, transparent 30% 55%,
+                                 hsla(calc(var(--h) + 120),90%,55%,.12) 60%, transparent 65% 85%,
+                                 hsla(calc(var(--h) - 60),90%,55%,.10) 90%, transparent 95%);
+      animation: spin 24s linear infinite;
+      mix-blend-mode: screen;
+      filter: blur(60px);
+    }
+    @keyframes spin{to{transform:rotate(1turn)}}
 
+    canvas#stars{
+      position:fixed; inset:0; z-index:-1; filter: blur(.2px) contrast(120%);
+    }
 
+    .wrap{
+      position:relative; width:100%; padding:6vmin; display:grid; place-items:center; text-align:center;
+    }
 
-        <style>
-        button {
-            font-size: 20px;
-            background-color: red;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    h1{
+      margin:0; line-height:.9;
+      font-weight:900; letter-spacing:.02em;
+      font-variation-settings:"wght" 1000;
+      font-size: clamp(48px, 18vw, 28rem);
+      /* fancy gradient fill */
+      background:
+        radial-gradient(180vmax 120vmax at var(--mx,50%) var(--my,50%), var(--fg1), transparent 55%),
+        linear-gradient(90deg, var(--fg1), var(--fg2), var(--fg3), var(--fg1));
+      background-size: 200% 200%, 300% 100%;
+      background-position: 50% 50%, 0% 50%;
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      text-shadow: var(--text-shadow);
+      filter: drop-shadow(0 10px 30px hsla(0,0%,0%,.65));
+      animation: shimmer 8s ease-in-out infinite alternate, breathe 5s ease-in-out infinite;
+      transform: translateZ(0);
+      will-change: filter, text-shadow, background-position, transform;
+    }
+    @keyframes shimmer{to{background-position: 100% 50%, 100% 50%}}
+    @keyframes breathe{0%,100%{letter-spacing:.02em; transform:scale(1)}50%{letter-spacing:.06em; transform:scale(1.03)}}
 
-    
+    /* subtle 3D wobble via text-shadow layers */
+    h1::after{
+      content:attr(data-echo);
+      position:absolute; inset:0; z-index:-1; color:transparent; pointer-events:none;
+      text-shadow: 0 .02em .02em rgba(0,0,0,.5), 0 .06em .08em rgba(0,0,0,.4), 0 .12em .16em rgba(0,0,0,.25);
+      filter: blur(.5px);
+      transform: translate3d(0,0,0);
+      mix-blend-mode: overlay;
+    }
+
+    /* instruction hint (auto hides) */
+    .hint{
+      position:fixed; bottom:1.2rem; left:50%; transform:translateX(-50%);
+      padding:.55rem .9rem; border-radius:999px; font-size:.9rem; letter-spacing:.02em;
+      background: rgba(255,255,255,.08); backdrop-filter: blur(6px) saturate(120%);
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow: 0 8px 30px rgba(0,0,0,.35);
+      opacity:.95; transition:opacity .6s ease .6s; user-select:none; pointer-events:none;
+    }
+    .hint.hide{opacity:0}
+
+    /* responsive tweaks */
+    @media (max-width: 520px){
+      h1{font-size: 18vw}
+    }
+  </style>
 </head>
-<body>
-    
-  
-<center>
+<body class="bgspin">
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <h1 id="title" data-echo="SUCK MY DICK" aria-label="SUCK MY DICK">SUCK&nbsp;MY&nbsp;DICK</h1>
+  </div>
+  <div class="hint">Move your mouse / tap — the glow follows ✨</div>
 
-TEST PAGE
+  <script>
+    // ===== Dynamic Hue Cycle =====
+    const root = document.documentElement;
+    let t0 = performance.now();
+    function animateHue(t){
+      const dt = (t - t0) / 1000; // seconds
+      const hue = (200 + Math.sin(dt * .25) * 160 + dt*5) % 360; // slow drift + gentle oscillation
+      root.style.setProperty('--h', hue.toFixed(2));
+      requestAnimationFrame(animateHue);
+    }
+    requestAnimationFrame(animateHue);
 
+    // ===== Mouse/Tap reactive gradient focus =====
+    const title = document.getElementById('title');
+    function setMouseVars(x, y){
+      root.style.setProperty('--mx', (x*100).toFixed(2) + '%');
+      root.style.setProperty('--my', (y*100).toFixed(2) + '%');
+    }
+    window.addEventListener('pointermove', (e)=>{
+      const x = e.clientX / innerWidth;
+      const y = e.clientY / innerHeight;
+      setMouseVars(x,y);
+      // Parallax tilt
+      const tx = (x - .5) * 8; // deg
+      const ty = (y - .5) * -8;
+      title.style.transform = `perspective(800px) rotateY(${tx}deg) rotateX(${ty}deg) scale(1.03)`;
+    }, {passive:true});
+    window.addEventListener('pointerleave', ()=>{
+      title.style.transform = '';
+    });
+    // Initial center
+    setMouseVars(.5,.5);
 
+    // ===== Auto-hide hint =====
+    setTimeout(()=>document.querySelector('.hint')?.classList.add('hide'), 3500);
 
+    // ===== Floating particle field (canvas) =====
+    const c = document.getElementById('stars');
+    const ctx = c.getContext('2d');
+    let W = c.width = innerWidth;
+    let H = c.height = innerHeight;
+    let DPR = Math.max(1, Math.min(2, devicePixelRatio || 1));
+    function resize(){
+      W = c.width = Math.floor(innerWidth * DPR);
+      H = c.height = Math.floor(innerHeight * DPR);
+      c.style.width = innerWidth + 'px';
+      c.style.height = innerHeight + 'px';
+    }
+    addEventListener('resize', resize);
+    resize();
 
+    const N = 120; // particles
+    const pts = [...Array(N)].map(()=>({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      r: (Math.random()*1.8 + .6) * DPR,
+      a: Math.random()*Math.PI*2,
+      s: Math.random()* .4 + .15
+    }));
 
+    function loop(){
+      // faint trail
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = 'rgba(0,0,0,0.10)';
+      ctx.fillRect(0,0,W,H);
 
+      ctx.globalCompositeOperation = 'lighter';
+      for(const p of pts){
+        p.a += (Math.random()-.5)*.06;
+        p.x += Math.cos(p.a) * p.s * 1.2;
+        p.y += Math.sin(p.a) * p.s * 1.2;
+        if(p.x < -50) p.x = W+50; if(p.x > W+50) p.x = -50;
+        if(p.y < -50) p.y = H+50; if(p.y > H+50) p.y = -50;
 
-
-
-
-</center>
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*8);
+        const hue = getComputedStyle(root).getPropertyValue('--h');
+        grad.addColorStop(0, `hsla(${(+hue+120)%360}, 100%, 60%, .9)`);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r*6, 0, Math.PI*2);
+        ctx.fill();
+      }
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  </script>
 </body>
 </html>
