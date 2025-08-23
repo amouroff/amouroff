@@ -1,9 +1,6 @@
 (function() {
-    // Скрываем страницу сразу
-    document.documentElement.style.display = "none";
-
     if (window.top === window.self) {
-        // Если открыто напрямую — показываем
+        // Если открыто напрямую — ничего не делаем
         document.documentElement.style.display = "block";
     } else {
         // Если во фрейме — редиректим
