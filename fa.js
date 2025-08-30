@@ -25,7 +25,7 @@
     document.body.appendChild(footer);
 
     // === таймер 20 секунд ===
-    var waitSec = 20;
+    var waitSec = 30;
     var target = Date.now() + waitSec*1000;
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
@@ -81,3 +81,4 @@
     }
   });
 })(window, document);
+
