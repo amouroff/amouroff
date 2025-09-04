@@ -24,17 +24,40 @@
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
     document.body.appendChild(footer);
 
-    // === таймер 20 секунд ===
+    // === таймер 30 секунд (считает только при активной вкладке) ===
     var waitSec = 30;
-    var target = Date.now() + waitSec*1000;
+    var needMs = waitSec * 1000;
+    var gainedMs = 0;                // сколько «активных» миллисекунд уже набрано
+    var lastTick = Date.now();       // время последнего тика
+    var isActive = !document.hidden; // активность вкладки по умолчанию
+
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
 
+    // Следим за активностью вкладки/окна
+    function setActive(state){
+      isActive = state;
+      lastTick = Date.now(); // чтобы не прибавлять «простоявшее» время
+    }
+    document.addEventListener("visibilitychange", function(){
+      setActive(!document.hidden);
+    });
+    window.addEventListener("focus", function(){ setActive(true); });
+    window.addEventListener("blur",  function(){ setActive(false); });
+
     var timerId = setInterval(function(){
-      var diff = Math.max(0, target - Date.now());
-      var secs = Math.ceil(diff/1000);
-      timerBox.textContent = "Подождите: " + secs + " секунд";
-      if(secs <= 0){
+      var now = Date.now();
+      if (isActive) {
+        // Прибавляем только если вкладка активна
+        gainedMs += (now - lastTick);
+      }
+      lastTick = now;
+
+      var remainMs = Math.max(0, needMs - gainedMs);
+      var secs = Math.ceil(remainMs / 1000);
+      timerBox.textContent = "Подождите: " + secs + " секунд (вкладка должна быть активна)";
+
+      if (remainMs <= 0) {
         clearInterval(timerId);
         showCaptcha();
       }
@@ -81,4 +104,3 @@
     }
   });
 })(window, document);
-
