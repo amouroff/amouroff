@@ -34,7 +34,6 @@
       url: window.location.href
     };
 
-    // Отправляем через Beacon (работает при закрытии вкладки)
     navigator.sendBeacon(
       "https://fastfaucet.pro/pages/track_quality.php",
       JSON.stringify(payload)
