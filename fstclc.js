@@ -23,17 +23,18 @@
 
     // === Шаг 1. Таймер ожидания 20 сек (только при активной вкладке) ===
     var waitSec = 20;
-    var target = Date.now() + waitSec*1000;
+    var remaining = waitSec; // секунд осталось
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
 
     var timerId = setInterval(function(){
       if (document.hidden) return; // таймер не идёт, если вкладка неактивна
 
-      var diff = Math.max(0, target - Date.now());
-      var secs = Math.ceil(diff/1000);
+      remaining -= 0.2; // интервал 200 мс
+      var secs = Math.ceil(remaining);
       timerBox.textContent = "Подождите: " + secs + " секунд";
-      if (secs <= 0){
+
+      if (remaining <= 0){
         clearInterval(timerId);
         step2();
       }
