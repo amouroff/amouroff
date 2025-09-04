@@ -11,7 +11,6 @@
   var startTime = Date.now();
   var maxScroll = 0;
   var mouseMoves = 0;
-  var clicks = 0;
 
   // Слушатели
   window.addEventListener("scroll", function(){
@@ -20,7 +19,6 @@
   });
 
   window.addEventListener("mousemove", function(){ mouseMoves++; });
-  window.addEventListener("click", function(){ clicks++; });
 
   // Отправка данных
   function sendReport(){
@@ -30,7 +28,6 @@
       duration: duration,
       scroll: maxScroll,
       mouse: mouseMoves,
-      clicks: clicks,
       url: window.location.href
     };
 
