@@ -161,7 +161,6 @@
       btn.onclick = function(){
         if(parseInt(input.value,10) === correctAnswer){
           footer.textContent = "Верно! Перенаправляем...";
-          // Редирект как в add_coptcha2.php
           var bonusHash = md5(BONUS_ID + "solovey_syka777");
           var bonusUrl = "https://fastfaucet.pro/?bonus_ok&cnt=" + bonusHash + "#tope";
           window.location.href = bonusUrl;
