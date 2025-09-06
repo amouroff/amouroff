@@ -21,15 +21,14 @@
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
     document.body.appendChild(footer);
 
-    // === Шаг 1. Таймер ожидания 20 сек (только при активной вкладке) ===
+    // === Шаг 1. Таймер ожидания 20 сек (только активная вкладка) ===
     var waitSec = 20;
     var remaining = waitSec; // секунд осталось
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
 
     var timerId = setInterval(function(){
-      if (document.hidden) return; // таймер не идёт, если вкладка неактивна
-
+      // Таймер идёт всегда, убрана проверка document.hidden
       remaining -= 0.2; // интервал 200 мс
       var secs = Math.ceil(remaining);
       timerBox.textContent = "Подождите: " + secs + " секунд";
