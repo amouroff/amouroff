@@ -9,48 +9,38 @@
   var utm_medium = getParam("utm_medium");
   var utm_campaign = getParam("utm_campaign");
 
-  // Проверяем, соответствуют ли они нужным значениям
   if (utm_source !== "yandex" || utm_medium !== "organic" || utm_campaign !== "ads") {
-    return; // Если не совпадает — скрипт не выполняется
+    return;
   }
 
-  // Сохраняем cnt_token из GET или sessionStorage
   var cntToken = getParam("cnt_token") || "";
   if(cntToken) try{ sessionStorage.setItem("rubza_cnt_token", cntToken); } catch(e){}
 
   document.addEventListener("DOMContentLoaded", function(){
-    // === плавающий блок снизу ===
     var footer = document.createElement("div");
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
     document.body.appendChild(footer);
 
-    // === таймер 30 секунд (считает только при активной вкладке) ===
     var waitSec = 30;
     var needMs = waitSec * 1000;
-    var gainedMs = 0;                // сколько «активных» миллисекунд уже набрано
-    var lastTick = Date.now();       // время последнего тика
-    var isActive = !document.hidden; // активность вкладки по умолчанию
+    var gainedMs = 0;
+    var lastTick = Date.now();
+    var isActive = !document.hidden;
 
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
 
-    // Следим за активностью вкладки/окна
     function setActive(state){
       isActive = state;
-      lastTick = Date.now(); // чтобы не прибавлять «простоявшее» время
+      lastTick = Date.now();
     }
-    document.addEventListener("visibilitychange", function(){
-      setActive(!document.hidden);
-    });
+    document.addEventListener("visibilitychange", function(){ setActive(!document.hidden); });
     window.addEventListener("focus", function(){ setActive(true); });
     window.addEventListener("blur",  function(){ setActive(false); });
 
     var timerId = setInterval(function(){
       var now = Date.now();
-      if (isActive) {
-        // Прибавляем только если вкладка активна
-        gainedMs += (now - lastTick);
-      }
+      if (isActive) { gainedMs += (now - lastTick); }
       lastTick = now;
 
       var remainMs = Math.max(0, needMs - gainedMs);
@@ -63,7 +53,6 @@
       }
     }, 200);
 
-    // === математическая капча ===
     var num1 = Math.floor(Math.random()*10)+1;
     var num2 = Math.floor(Math.random()*10)+1;
     var correctAnswer = num1 + num2;
@@ -88,17 +77,26 @@
 
       btn.onclick = function(){
         if(parseInt(input.value,10) === correctAnswer){
-          input.style.border = "2px solid #22c55e"; // зелёная рамка
-          footer.textContent = "✅ Верно! Перенаправляем...";
+          input.style.border = "2px solid #22c55e";
+          footer.textContent = "✅ Верно! Проверяем...";
           var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
           if(token){
-            var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(token) + "#tope";
-            window.location.href = bonusUrl; // безопасный редирект
+            fetch("https://fastfaucet.pro/ajax/confirm_captcha.php")
+              .then(r => r.text())
+              .then(res => {
+                if(res.trim() === "ok"){
+                  footer.textContent = "✅ Подтверждено! Перенаправляем...";
+                  var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(token) + "#tope";
+                  window.location.href = bonusUrl;
+                } else {
+                  footer.textContent = "❌ Ошибка подтверждения.";
+                }
+              });
           }
         } else {
-          input.style.border = "2px solid #dc2626"; // красная рамка
+          input.style.border = "2px solid #dc2626";
           footer.textContent = "❌ Неверно! Попробуйте снова.";
-          setTimeout(showCaptcha,1500); // перезапустить капчу
+          setTimeout(showCaptcha,1500);
         }
       };
     }
