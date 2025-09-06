@@ -12,34 +12,39 @@
     return;
   }
 
-  // --- Сохраняем cnt_token ---
+  // --- cnt_token для совместимости ---
   var cntToken = getParam("cnt_token") || "";
   if (cntToken) { try { sessionStorage.setItem("rubza_cnt_token", cntToken); } catch(e){} }
+
+  // --- Бонус ID из PHP сессии ---
+  var BONUS_ID = "<?= isset($_SESSION['bonus_id']) ? addslashes($_SESSION['bonus_id']) : 'guest' ?>";
+  function md5(s) { 
+    /* Мини-реализация md5 для JS или используй внешнюю библиотеку */ 
+    return s; /* для теста можно просто вернуть s, позже подключишь библиотеку md5 */ 
+  }
 
   document.addEventListener("DOMContentLoaded", function(){
     var footer = document.createElement("div");
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
     document.body.appendChild(footer);
 
-    // === Шаг 1. Таймер ожидания 20 сек (только активная вкладка) ===
+    // --- Шаг 1. Таймер ожидания 20 сек ---
     var waitSec = 20;
-    var remaining = waitSec; // секунд осталось
+    var remaining = waitSec;
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
 
     var timerId = setInterval(function(){
-      // Таймер идёт всегда, убрана проверка document.hidden
-      remaining -= 0.2; // интервал 200 мс
+      remaining -= 0.2;
       var secs = Math.ceil(remaining);
       timerBox.textContent = "Подождите: " + secs + " секунд";
-
       if (remaining <= 0){
         clearInterval(timerId);
         step2();
       }
     }, 200);
 
-    // === Шаг 2. Клик по баннеру ===
+    // --- Шаг 2. Клик по баннеру ---
     var needSec = 10;
     var leavingAt = 0;
     var watching = false;
@@ -130,7 +135,7 @@
       window.__rubz_handlers = null;
     }
 
-    // === Шаг 3. Математическая капча ===
+    // --- Шаг 3. Капча ---
     function showCaptcha(){
       footer.innerHTML = "";
 
@@ -156,16 +161,16 @@
       btn.onclick = function(){
         if(parseInt(input.value,10) === correctAnswer){
           footer.textContent = "Верно! Перенаправляем...";
-          var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
-          if(token){
-            var bonusUrl = "https://fastfaucet.pro/pages/utm_new_clicks.php?cnt=" + encodeURIComponent(token) + "#tope";
-            window.location.href = bonusUrl;
-          }
+          // Редирект как в add_coptcha2.php
+          var bonusHash = md5(BONUS_ID + "solovey_syka777");
+          var bonusUrl = "https://fastfaucet.pro/?bonus_ok&cnt=" + bonusHash + "#tope";
+          window.location.href = bonusUrl;
         } else {
           footer.textContent = "Неверно! Попробуйте снова.";
-          setTimeout(showCaptcha,1500); // новая капча
+          setTimeout(showCaptcha,1500);
         }
       };
     }
+
   });
 })(window, document);
