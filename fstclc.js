@@ -21,7 +21,7 @@
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
     document.body.appendChild(footer);
 
-    // === Шаг 1. Таймер ожидания 20 сек (только при активной вкладке) ===
+    // === Шаг 1. Таймер ожидания 40 сек (только при активной вкладке) ===
     var waitSec = 40;
     var remaining = waitSec; // секунд осталось
     var timerBox = document.createElement("span");
