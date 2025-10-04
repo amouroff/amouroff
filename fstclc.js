@@ -22,7 +22,7 @@
     document.body.appendChild(footer);
 
     // === Шаг 1. Таймер ожидания 20 сек (только при активной вкладке) ===
-    var waitSec = 20;
+    var waitSec = 40;
     var remaining = waitSec; // секунд осталось
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
