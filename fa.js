@@ -25,7 +25,7 @@
     document.body.appendChild(footer);
 
     // === таймер 30 секунд (считает только при активной вкладке) ===
-    var waitSec = 45;
+    var waitSec = 50;
     var needMs = waitSec * 1000;
     var gainedMs = 0;                // сколько «активных» миллисекунд уже набрано
     var lastTick = Date.now();       // время последнего тика
@@ -104,4 +104,5 @@
     }
   });
 })(window, document);
+
 
