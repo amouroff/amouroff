@@ -21,9 +21,9 @@
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
     document.body.appendChild(footer);
 
-    // === Шаг 1. Таймер ожидания 40 сек (только при активной вкладке) ===
-    var waitSec = 50;
-    var remaining = waitSec; // секунд осталось
+    // === Шаг 1. Таймер ожидания (рандом от 39 до 51 сек, только при активной вкладке) ===
+    var waitSec = Math.floor(Math.random() * (51 - 39 + 1)) + 39; // 👈 тут рандомизация
+    var remaining = waitSec;
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
 
@@ -164,7 +164,7 @@
           }
         } else {
           footer.textContent = "Неверно! Попробуйте снова.";
-          setTimeout(showCaptcha,1500); // новая капча
+          setTimeout(showCaptcha,1500);
         }
       };
     }
