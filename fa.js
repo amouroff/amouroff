@@ -24,20 +24,19 @@
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
     document.body.appendChild(footer);
 
-    // === таймер 30 секунд (считает только при активной вкладке) ===
-    var waitSec = 50;
+    // === таймер со случайным временем от 39 до 51 секунд ===
+    var waitSec = Math.floor(Math.random() * (51 - 39 + 1)) + 39; // случайное число в диапазоне
     var needMs = waitSec * 1000;
-    var gainedMs = 0;                // сколько «активных» миллисекунд уже набрано
-    var lastTick = Date.now();       // время последнего тика
-    var isActive = !document.hidden; // активность вкладки по умолчанию
+    var gainedMs = 0;
+    var lastTick = Date.now();
+    var isActive = !document.hidden;
 
     var timerBox = document.createElement("span");
     footer.appendChild(timerBox);
 
-    // Следим за активностью вкладки/окна
     function setActive(state){
       isActive = state;
-      lastTick = Date.now(); // чтобы не прибавлять «простоявшее» время
+      lastTick = Date.now();
     }
     document.addEventListener("visibilitychange", function(){
       setActive(!document.hidden);
@@ -48,7 +47,6 @@
     var timerId = setInterval(function(){
       var now = Date.now();
       if (isActive) {
-        // Прибавляем только если вкладка активна
         gainedMs += (now - lastTick);
       }
       lastTick = now;
@@ -88,21 +86,19 @@
 
       btn.onclick = function(){
         if(parseInt(input.value,10) === correctAnswer){
-          input.style.border = "2px solid #22c55e"; // зелёная рамка
+          input.style.border = "2px solid #22c55e";
           footer.textContent = "✅ Верно! Перенаправляем...";
           var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
           if(token){
             var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(token) + "#tope";
-            window.location.href = bonusUrl; // безопасный редирект
+            window.location.href = bonusUrl;
           }
         } else {
-          input.style.border = "2px solid #dc2626"; // красная рамка
+          input.style.border = "2px solid #dc2626";
           footer.textContent = "❌ Неверно! Попробуйте снова.";
-          setTimeout(showCaptcha,1500); // перезапустить капчу
+          setTimeout(showCaptcha,1500);
         }
       };
     }
   });
 })(window, document);
-
-
