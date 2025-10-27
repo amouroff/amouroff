@@ -1,52 +1,44 @@
 (function() {
-  // Вставляем твои стили
   const style = document.createElement("style");
   style.textContent = `
     .adlk_ibv_onlypc, .adlk_ibv_mobpc  {margin-bottom: 1rem; margin-top: 1rem}
     @media (max-width: 640px) {
-        .adlk_ibv_onlypc { display: none; } 
-        .adlk_ibv_mobpc { width: 90%; } 
+        .adlk_ibv_onlypc { display: none; }
+        .adlk_ibv_mobpc { width: 90%; }
     }
   `;
   document.head.appendChild(style);
 
-  // Вставляем твой HTML
   const html = `
-    <div class="adlk_ibv_container" style="display: flex; justify-content: center; gap: 20px; margin: auto;">
-      <div id="adlk-embed-1" class="adlk_ibv_mobpc"></div>
-      <div id="adlk-embed-2" class="adlk_ibv_onlypc"></div>
-      <div id="adlk-embed-3" class="adlk_ibv_onlypc"></div>
-    </div>
+    <div id="adlk-embed-1" class="adlk_ibv_mobpc" style="min-height: 225px; min-width: 400px"></div>
+    <div id="adlk-embed-2" class="adlk_ibv_onlypc" style="min-height: 225px; min-width: 400px"></div>
   `;
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = html;
-  document.body.appendChild(wrapper);
+  const container = document.createElement("div");
+  container.innerHTML = html;
+  document.body.appendChild(container);
 
-  // Вставляем твой оригинальный JS
-  const containers = ["adlk-embed-1", "adlk-embed-2", "adlk-embed-3"];    
+  const containers = ["adlk-embed-1","adlk-embed-2"];
   const init = (id) => {
     if (window.UTInventoryCore && document.getElementById(id)) {
       new window.UTInventoryCore({
-        type: "embed", 
-        host: 2294, 
-        content: false, 
+        type: "embed",
+        host: 2294,
+        content: false,
         container: id,
-        width: 400, 
-        height: 225, 
+        adaptive: true,
+        width: 400,
+        height: 225,
         playMode: "autoplay",
         collapse: "none",
-        infinity: true, 
-        interfaceType: 0,
+        infinity: true,
+        infinityTimer: 1,
         withoutIframe: true,
-        infinityTimer: 1
       });
     }
   };
-
   const tryInit = () => {
     if (window.UTInventoryCore) containers.forEach(init);
     else setTimeout(tryInit, 100);
   };
-
   tryInit();
 })();
