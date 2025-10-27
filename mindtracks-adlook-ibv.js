@@ -28,7 +28,7 @@
     if (window.UTInventoryCore && document.getElementById(id)) {
       new window.UTInventoryCore({
         type: "embed", 
-        host: 1702, 
+        host: 12, 
         content: false, 
         container: id,
         width: 400, 
