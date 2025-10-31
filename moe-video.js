@@ -2,6 +2,7 @@
   const script = document.createElement("script");
   script.src = "https://cdn1.moe.video/p/cr.js";
   script.onload = () => {
+    // 1. Нижний левый стикер
     addContentRoll({
       width: '100%',
       placement: 12356,
@@ -15,12 +16,13 @@
         mode: 'stick',
         width: 445,
         closeSecOffset: 5,
-        position: 'bottom-center', // 🔥 изменено с top-center на bottom-center
+        position: 'bottom-left', // 🔥 изменено: теперь снизу слева
         indent: { left: 0, right: 0, top: 0, bottom: 0 },
-        positionMobile: 'bottom', // оставлено как есть
+        positionMobile: 'bottom', // на мобилках остаётся снизу
       },
     });
 
+    // 2. Внутри #contentroll слева
     addContentRoll({
       element: '#contentroll',
       width: '100%',
@@ -42,6 +44,7 @@
       },
     });
 
+    // 3. Внутри #contentroll справа
     addContentRoll({
       element: '#contentroll',
       width: '100%',
