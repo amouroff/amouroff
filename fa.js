@@ -15,21 +15,12 @@
   }
 
   var cntToken = getParam("cnt_token") || "";
-  try{ if(cntToken) sessionStorage.setItem("rubza_cnt_token", cntToken); } catch(e){}
+  if(cntToken) try{ sessionStorage.setItem("rubza_cnt_token", cntToken); } catch(e){}
 
   document.addEventListener("DOMContentLoaded", function(){
-
-    // -----------------------
-    // UI: footer + стили
-    // -----------------------
     var footer = document.createElement("div");
-    footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;box-sizing:border-box;";
+    footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
     document.body.appendChild(footer);
-
-    // отладочный лог (включить для мобильной отладки)
-    var debugLog = document.createElement("div");
-    debugLog.style.cssText = "position:fixed;left:8px;bottom:72px;background:rgba(0,0,0,0.6);color:#fff;padding:6px 8px;border-radius:6px;font-size:12px;z-index:999999;max-width:320px;pointer-events:none;display:none;";
-    document.body.appendChild(debugLog);
 
     var waitSec = Math.floor(Math.random() * (51 - 39 + 1)) + 39;
     var needMs = waitSec * 1000;
@@ -63,314 +54,212 @@
 
       if (remainMs <= 0) {
         clearInterval(timerId);
-        showHumanPuzzleCaptcha();
+        showMathCaptcha();
       }
     }, 200);
 
-    // ==================================================
-    // CAPTCHA: Puzzle slider — улучшенная и совместимая
-    // ==================================================
-    function showHumanPuzzleCaptcha(){
+
+    // ===========================
+    // НОВАЯ КАПЧА: МАТЕМАТИЧЕСКАЯ (словами)
+    // ===========================
+    function numberToWordsRu(n){
+      // работает для 0..99 (достаточно для нашей капчи)
+      var ones = ["ноль","один","два","три","четыре","пять","шесть","семь","восемь","девять","десять","одиннадцать","двенадцать","тринадцать","четырнадцать","пятнадцать","шестнадцать","семнадцать","восемнадцать","девятнадцать"];
+      var tens = ["", "", "двадцать","тридцать","сорок","пятьдесят","шестьдесят","семьдесят","восемьдесят","девяносто"];
+      if(n < 20) return ones[n];
+      var t = Math.floor(n/10);
+      var o = n%10;
+      return tens[t] + (o? " " + ones[o] : "");
+    }
+
+    function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+    function genQuestion(){
+      // генерируем простую арифметику двумя числами (3..20), операторы + или -
+      var a = randInt(3, 20);
+      var b = randInt(3, 20);
+      var op = Math.random() < 0.7 ? "+" : "-"; // чаще плюс
+      // чтобы не получить отрицательный результат при минусе — делаем a >= b
+      if(op === "-" && a < b){ var tmp = a; a = b; b = tmp; }
+      var words = numberToWordsRu(a) + " " + (op === "+" ? "плюс" : "минус") + " " + numberToWordsRu(b);
+      var answer = op === "+" ? (a + b) : (a - b);
+      return { words: words, answer: answer };
+    }
+
+    function showMathCaptcha(){
       footer.innerHTML = "";
 
+      var box = document.createElement("div");
+      box.style.cssText = "display:inline-block;padding:14px;background:#fff;color:#000;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.25);text-align:left;max-width:760px;";
+      footer.appendChild(box);
+
       var title = document.createElement("div");
-      title.textContent = "Подтвердите, что вы человек — перетащите кусочек пазла на место";
-      title.style.cssText = "margin-bottom:8px;font-weight:700;";
-      footer.appendChild(title);
+      title.textContent = "Подтвердите, что вы человек — ответьте на простой вопрос (введите цифрами)";
+      title.style.cssText = "font-weight:700;margin-bottom:8px;font-size:15px;";
+      box.appendChild(title);
 
-      var wrap = document.createElement("div");
-      wrap.style.cssText = "display:inline-block;padding:12px;background:#fff;color:#000;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.25);";
-      footer.appendChild(wrap);
+      // поле для подсказки вопроса
+      var qwrap = document.createElement("div");
+      qwrap.style.cssText = "display:flex;align-items:center;gap:12px;";
+      box.appendChild(qwrap);
 
-      var W = 320, H = 140;
-      var pieceW = 56, pieceH = 56;
+      var qbox = document.createElement("div");
+      qbox.style.cssText = "background:#f6f6f6;padding:10px;border-radius:6px;border:1px solid rgba(0,0,0,0.06);font-size:16px;min-width:320px;";
+      qwrap.appendChild(qbox);
 
-      var overlay = document.createElement("div");
-      overlay.style.cssText = "position:relative;width:" + W + "px;height:" + (H + 80) + "px;user-select:none;";
-      wrap.appendChild(overlay);
+      // поле ввода и кнопка
+      var ctrl = document.createElement("div");
+      ctrl.style.cssText = "display:flex;gap:8px;align-items:center;margin-top:10px;";
+      box.appendChild(ctrl);
 
-      var canvas = document.createElement("canvas");
-      canvas.width = W;
-      canvas.height = H;
-      canvas.style.cssText = "display:block;border-radius:6px;overflow:hidden;background:#eee;";
-      overlay.appendChild(canvas);
-      var ctx = canvas.getContext('2d');
+      var input = document.createElement("input");
+      input.type = "text";
+      input.inputMode = "numeric";
+      input.autocomplete = "off";
+      input.placeholder = "Введите ответ цифрами";
+      input.style.cssText = "padding:10px;border-radius:6px;border:1px solid #ddd;font-size:16px;width:160px;";
+      ctrl.appendChild(input);
 
-      // детерминированный seed (можно хранить/логировать)
-      var seed = (Date.now() % 1000000) ^ Math.floor(Math.random() * 9999);
-      function randFn(i){
-        // простая псевдорандом-функция зависимо от seed
-        var x = Math.sin(seed + i) * 10000;
-        return x - Math.floor(x);
-      }
-
-      function drawBackground(seedInner){
-        ctx.clearRect(0,0,W,H);
-        ctx.fillStyle = "#f0f0f0";
-        ctx.fillRect(0,0,W,H);
-        for(var i=0;i<28;i++){
-          ctx.beginPath();
-          var x = (Math.sin((seedInner+i)*12.7)*0.5+0.5)*W;
-          var y = (Math.cos((seedInner+i)*5.3)*0.5+0.5)*H;
-          var r = 6 + (Math.abs(Math.sin((seedInner+i)*2.1))*20);
-          ctx.fillStyle = "rgba(" + ((seedInner*3+i*13)%255) + "," + ((seedInner*7+i*19)%200) + ",180,0.12)";
-          ctx.arc(x,y,r,0,Math.PI*2);
-          ctx.fill();
-        }
-        for(var j=0;j<5;j++){
-          ctx.beginPath();
-          ctx.moveTo(randFn(j+10)*W, randFn(j+20)*H);
-          ctx.quadraticCurveTo(randFn(j+30)*W, randFn(j+40)*H, randFn(j+50)*W, randFn(j+60)*H);
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = "rgba(0,0,0,0.03)";
-          ctx.stroke();
-        }
-      }
-
-      function roundRectPath(c, x, y, w, h, r){
-        if (r === undefined) r = 6;
-        c.beginPath();
-        c.moveTo(x + r, y);
-        c.arcTo(x + w, y, x + w, y + h, r);
-        c.arcTo(x + w, y + h, x, y + h, r);
-        c.arcTo(x, y + h, x, y, r);
-        c.arcTo(x, y, x + w, y, r);
-        c.closePath();
-      }
-
-      drawBackground(seed);
-
-      var pieceX = 70 + Math.floor(randFn(1)*(W - 160));
-      var pieceY = 30 + Math.floor(randFn(2)*(H - 80));
-
-      var pieceBuf = document.createElement("canvas");
-      pieceBuf.width = pieceW;
-      pieceBuf.height = pieceH;
-      var pbCtx = pieceBuf.getContext('2d');
-      pbCtx.drawImage(canvas, pieceX, pieceY, pieceW, pieceH, 0, 0, pieceW, pieceH);
-
-      var pieceMask = document.createElement("canvas");
-      pieceMask.width = pieceW;
-      pieceMask.height = pieceH;
-      var pm = pieceMask.getContext('2d');
-      pm.drawImage(pieceBuf,0,0);
-      pm.globalCompositeOperation = "destination-in";
-      pm.fillStyle = "#000";
-      roundRectPath(pm,0,0,pieceW,pieceH,8);
-      pm.fill();
-
-      // перерисуем фон с пустым слотом
-      drawBackground(seed);
-      ctx.save();
-      ctx.fillStyle = "#f7f7f7";
-      roundRectPath(ctx, pieceX, pieceY, pieceW, pieceH, 8);
-      ctx.fill();
-      ctx.restore();
-      ctx.save();
-      ctx.strokeStyle = "rgba(0,0,0,0.12)";
-      ctx.lineWidth = 2;
-      roundRectPath(ctx, pieceX, pieceY, pieceW, pieceH, 8);
-      ctx.stroke();
-      ctx.restore();
-
-      var dragCanvas = document.createElement("canvas");
-      dragCanvas.width = pieceW;
-      dragCanvas.height = pieceH;
-      dragCanvas.style.cssText = "position:absolute;left:10px;top:" + (pieceY) + "px;cursor:grab;border-radius:6px;box-shadow:0 6px 14px rgba(0,0,0,0.25);touch-action:none;user-select:none;";
-      overlay.appendChild(dragCanvas);
-      var dctx = dragCanvas.getContext('2d');
-      dctx.clearRect(0,0,pieceW,pieceH);
-      dctx.drawImage(pieceMask,0,0);
+      var btn = document.createElement("button");
+      btn.textContent = "Проверить";
+      btn.style.cssText = "padding:10px 14px;border-radius:6px;border:0;background:#0b76ff;color:#fff;font-weight:700;cursor:pointer;";
+      ctrl.appendChild(btn);
 
       var hint = document.createElement("div");
-      hint.style.cssText = "margin-top:8px;font-size:13px;color:#222;";
-      hint.textContent = "Нажмите и перетащите кусок пазла в выемку.";
-      wrap.appendChild(hint);
+      hint.style.cssText = "margin-top:8px;font-size:13px;color:#333;";
+      box.appendChild(hint);
 
-      // state
-      var state = {
-        dragging: false,
-        hadTrustedDown: false,
-        hadTrustedMoves: 0,
-        moves: [],
-        downTime: 0,
-        upTime: 0
+      // honeypot (скрытое поле — боты часто заполняют все поля)
+      var honeypot = document.createElement("input");
+      honeypot.type = "text";
+      honeypot.name = "hp_field";
+      honeypot.style.cssText = "position:absolute;left:-9999px;top:-9999px;opacity:0;height:1px;width:1px;";
+      box.appendChild(honeypot);
+
+      // состояние и stats поведения
+      var data = {
+        q: genQuestion(),
+        attempts: 0,
+        hadTrustedKeydowns: 0,
+        keyEvents: [],
+        pointerInteracted: false,
+        firstKeystrokeAt: 0,
+        lastKeystrokeAt: 0
       };
 
-      function overlayRect(){ return overlay.getBoundingClientRect(); }
+      qbox.textContent = data.q.words + "."; // пример: "десять плюс восемь."
 
-      // --- вспомогательные функции для совместимости ---
-      function safeSetPointerCapture(el, id){
-        if(!el || id == null) return;
-        if(typeof el.setPointerCapture === "function"){
-          try{ el.setPointerCapture(id); } catch(e){}
-        }
-      }
-      function safeReleasePointerCapture(el, id){
-        if(!el || id == null) return;
-        if(typeof el.releasePointerCapture === "function"){
-          try{ el.releasePointerCapture(id); } catch(e){}
-        }
-      }
+      // события: pointer down on input or click button considered human interaction
+      input.addEventListener("pointerdown", function(e){
+        data.pointerInteracted = data.pointerInteracted || (typeof e.isTrusted === "undefined" ? true : e.isTrusted);
+      });
 
-      // логирование в отладочный блок (показывать при необходимости)
-      function dbg(msg){
-        // для быстрой отладки раскомментируй следующую строку:
-        // debugLog.style.display = "block";
-        debugLog.textContent = (new Date()).toLocaleTimeString() + " — " + msg;
-        console.log(msg);
-      }
+      // key events tracking (isTrusted important)
+      input.addEventListener("keydown", function(e){
+        var trusted = (typeof e.isTrusted === "undefined") ? true : e.isTrusted;
+        if(trusted) data.hadTrustedKeydowns++;
+        var now = Date.now();
+        if(!data.firstKeystrokeAt) data.firstKeystrokeAt = now;
+        data.lastKeystrokeAt = now;
+        data.keyEvents.push({t: now, trusted: !!trusted});
+        // allow only digits, backspace, Enter, minus, numpad
+        var allowed = /[0-9]|Backspace|Enter|Delete|ArrowLeft|ArrowRight|Home|End|Tab|Minus/;
+        // if needed, permit numpad keys via keyCode, but modern browsers use e.key
+        // do not block here aggressively — just record
+      });
 
-      function markMove(e, clientX, clientY){
-        var trusted = (typeof e !== "undefined" && typeof e.isTrusted !== "undefined") ? !!e.isTrusted : true;
-        if(trusted) state.hadTrustedMoves++;
-        state.moves.push({x:clientX, y:clientY, t:Date.now(), trusted:trusted});
-      }
+      // also track paste (bots may paste)
+      input.addEventListener("paste", function(e){
+        // mark as not very human if paste happens instantly
+        data.pasted = true;
+      });
 
-      function moveDragTo(clientX){
-        var r = overlay.getBoundingClientRect();
-        var localX = clientX - r.left - (pieceW/2);
-        localX = Math.max(0, Math.min(W - pieceW, localX));
-        dragCanvas.style.left = localX + "px";
-        dragCanvas.style.top = pieceY + "px";
-      }
+      // click handler
+      btn.addEventListener("click", tryCheck, false);
+      input.addEventListener("keydown", function(e){
+        if(e.key === "Enter") { tryCheck(); }
+      });
 
-      // unified handlers
-      function onDown(e, clientX, clientY, pointerId){
-        if(e && typeof e.preventDefault === "function") try { e.preventDefault(); } catch(e){}
-        state.dragging = true;
-        state.hadTrustedDown = !!(typeof e !== "undefined" && typeof e.isTrusted !== "undefined" ? e.isTrusted : true);
-        state.hadTrustedMoves = 0;
-        state.moves = [];
-        state.downTime = Date.now();
-        safeSetPointerCapture(dragCanvas, pointerId);
-        dragCanvas.style.cursor = "grabbing";
-        moveDragTo(clientX);
-        markMove(e, clientX, clientY);
-        dbg("down trusted=" + state.hadTrustedDown);
-      }
-
-      function onMove(e, clientX, clientY){
-        if(!state.dragging) return;
-        if(e && typeof e.preventDefault === "function") try { e.preventDefault(); } catch(e){}
-        markMove(e, clientX, clientY);
-        moveDragTo(clientX);
-        dbg("move count=" + state.moves.length);
-      }
-
-      function onUp(e, pointerId){
-        if(!state.dragging) return;
-        if(e && typeof e.preventDefault === "function") try { e.preventDefault(); } catch(e){}
-        safeReleasePointerCapture(dragCanvas, pointerId);
-        state.dragging = false;
-        state.upTime = Date.now();
-        dragCanvas.style.cursor = "grab";
-
-        var finalLeft = parseFloat(dragCanvas.style.left || "0");
-        var correctLeft = pieceX;
-        // увеличенная толерантность: подстраиваемся под тач
-        var tol = 14 + Math.random()*6;
-
-        var totalTime = state.upTime - state.downTime;
-        var moves = state.moves.length;
-        var trusted = state.hadTrustedMoves;
-
-        var speeds = [];
-        for(var i=1;i<state.moves.length;i++){
-          var dx = state.moves[i].x - state.moves[i-1].x;
-          var dt = state.moves[i].t - state.moves[i-1].t || 1;
-          speeds.push(Math.abs(dx)/dt);
-        }
-        var mean = speeds.length ? speeds.reduce((a,b)=>a+b,0)/speeds.length : 0;
-        var variance = 0;
-        if(speeds.length){
-          variance = speeds.reduce((acc,s)=>acc + Math.pow(s-mean,2),0)/speeds.length;
+      function tryCheck(){
+        data.attempts++;
+        var raw = (input.value || "").trim();
+        // quick honeypot reject
+        if(honeypot.value && honeypot.value.trim().length){
+          hint.style.color = "#a00";
+          hint.textContent = "Обнаружен подозрительный ввод (honeypot).";
+          return failAndMaybeReset();
         }
 
-        dbg("up finalLeft=" + finalLeft + " correct=" + correctLeft + " moves=" + moves + " trusted=" + trusted + " t=" + totalTime + " var=" + variance.toFixed(6));
-
-        // адаптивные пороги
-        var isTouchDevice = (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
-        var minMoves = isTouchDevice ? 2 : 5;
-        var minTrusted = isTouchDevice ? 1 : 3;
-        var minTime = isTouchDevice ? 120 : 200;
-        var minVar = isTouchDevice ? 0.00005 : 0.0005;
-
-        var pass = false;
-        if(state.hadTrustedDown && trusted >= minTrusted && moves >= minMoves && totalTime >= minTime && variance >= minVar) {
-          if(Math.abs(finalLeft - correctLeft) <= tol) pass = true;
+        // basic number parse
+        var userNum = parseInt(raw.replace(/[^\d\-]/g, ''), 10);
+        if(isNaN(userNum)){
+          hint.style.color = "#a00";
+          hint.textContent = "Введите число цифрами, например 18.";
+          return;
         }
 
-        if(pass){
-          dragCanvas.style.left = correctLeft + "px";
+        // simple heuristics
+        var timeTyping = data.firstKeystrokeAt ? (data.lastKeystrokeAt - data.firstKeystrokeAt) : 0;
+        var trustedKeys = data.hadTrustedKeydowns;
+        var pointer = data.pointerInteracted;
+        var keyEventsCount = data.keyEvents.length;
+
+        console.log("MathCaptcha check:", {attempts:data.attempts, timeTyping, trustedKeys, pointer, keyEventsCount, pasted: !!data.pasted});
+
+        var humanLike = (pointer && trustedKeys >= 1 && keyEventsCount >= 1 && timeTyping >= 50) || (data.pasted && pointer);
+        // more strict for instant typed answers without pointer
+        if(!humanLike){
+          hint.style.color = "#a00";
+          hint.textContent = "Подозрительная активность — кликните по полю и введите ответ вручную.";
+          return failAndMaybeReset();
+        }
+
+        // final check
+        if(userNum === data.q.answer){
+          hint.style.color = "#0a0";
           hint.textContent = "✅ Отлично — проверено. Перенаправляем...";
-          dbg("pass — redirecting");
+          // success — небольшая защита против автоматов: ещё проверим token и redirect
           setTimeout(function(){
-            var token = cntToken || (function(){ try{ return sessionStorage.getItem("rubza_cnt_token"); } catch(e){ return ""; } })() || "";
+            var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
             if(token){
               var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(token) + "#tope";
               window.location.href = bonusUrl;
             } else {
               hint.textContent = "Токен не найден — обновите страницу.";
-              dbg("token missing");
             }
-          }, 600);
+          }, 500 + Math.floor(Math.random()*400)); // рандомная задержка
+          return;
         } else {
-          hint.textContent = "Не похоже на реальное перетаскивание. Попробуйте ещё раз.";
-          dragCanvas.style.left = "10px";
-          state.moves = [];
-          state.hadTrustedMoves = 0;
-          state.hadTrustedDown = false;
-          dbg("fail — reset");
+          hint.style.color = "#a00";
+          hint.textContent = "Неправильно — попробуйте снова.";
+          return failAndMaybeReset();
         }
       }
 
-      // Attach events: Pointer events preferred, fallback to touch + mouse
-      if(window.PointerEvent){
-        dragCanvas.addEventListener("pointerdown", function(e){
-          onDown(e, e.clientX, e.clientY, e.pointerId);
-        }, {passive:false});
-        dragCanvas.addEventListener("pointermove", function(e){
-          onMove(e, e.clientX, e.clientY);
-        }, {passive:false});
-        dragCanvas.addEventListener("pointerup", function(e){
-          onUp(e, e.pointerId);
-        }, {passive:false});
-        dragCanvas.addEventListener("pointercancel", function(e){
-          onUp(e, e.pointerId);
-        }, {passive:false});
-      } else {
-        // touch fallback
-        dragCanvas.addEventListener("touchstart", function(e){
-          var t = e.changedTouches[0];
-          onDown(e, t.clientX, t.clientY, null);
-        }, {passive:false});
-        dragCanvas.addEventListener("touchmove", function(e){
-          var t = e.changedTouches[0];
-          onMove(e, t.clientX, t.clientY);
-        }, {passive:false});
-        dragCanvas.addEventListener("touchend", function(e){
-          onUp(e, null);
-        }, {passive:false});
-
-        // mouse fallback (desktop)
-        dragCanvas.addEventListener("mousedown", function(e){
-          onDown(e, e.clientX, e.clientY, null);
-          var onDocMove = function(ev){
-            onMove(ev, ev.clientX, ev.clientY);
-          };
-          var onDocUp = function(ev){
-            onMove(ev, ev.clientX, ev.clientY);
-            onUp(ev, null);
-            document.removeEventListener('mousemove', onDocMove, {passive:false});
-            document.removeEventListener('mouseup', onDocUp, {passive:false});
-          };
-          document.addEventListener('mousemove', onDocMove, {passive:false});
-          document.addEventListener('mouseup', onDocUp, {passive:false});
-        }, {passive:false});
+      function failAndMaybeReset(){
+        // на каждом неуспехе — если попыток мало — даём шанс, иначе обновляем вопрос
+        if(data.attempts >= 3){
+          // regenerate question
+          data.q = genQuestion();
+          qbox.textContent = data.q.words + ".";
+          hint.style.color = "#333";
+          hint.textContent = "Новый вопрос. Введите ответ цифрами.";
+          data.attempts = 0;
+          input.value = "";
+          data.hadTrustedKeydowns = 0;
+          data.keyEvents = [];
+          data.pointerInteracted = false;
+          data.firstKeystrokeAt = 0;
+          data.lastKeystrokeAt = 0;
+          data.pasted = false;
+        } else {
+          // soft reset input for quick retry
+          input.value = "";
+        }
       }
 
-      dragCanvas.addEventListener("contextmenu", function(e){ e.preventDefault(); }, false);
+      // accessibility: focus input automatically
+      setTimeout(function(){ try{ input.focus(); } catch(e){} }, 120);
     }
 
   });
