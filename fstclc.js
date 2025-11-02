@@ -101,7 +101,7 @@
           if (bs) bs.textContent = "Просмотр засчитан! Теперь пройдите капчу ниже.";
           cleanup();
           stopTitleTimer(true);
-          showCaptcha();
+          showCaptcha(); // <-- тут вызываем капчу
         } else {
           watching = false;
           if (bs) bs.textContent = "Баннер закрыт слишком рано! Держите вкладку открытой " + needSec + " сек и вернитесь.";
@@ -131,191 +131,142 @@
       window.__rubz_handlers = null;
     }
 
-    // === Шаг 3. ПАЗЛ-КАПЧА (замена математической капчи) ===
+    // === Шаг 3. МАТЕМАТИЧЕСКАЯ КАПЧА (вопрос словами, ответ цифрами) ===
+    function numberToWordsRu(n){
+      var ones = ["ноль","один","два","три","четыре","пять","шесть","семь","восемь","девять","десять","одиннадцать","двенадцать","тринадцать","четырнадцать","пятнадцать","шестнадцать","семнадцать","восемнадцать","девятнадцать"];
+      var tens = ["", "", "двадцать","тридцать","сорок","пятьдесят","шестьдесят","семьдесят","восемьдесят","девяносто"];
+      if(n < 20) return ones[n];
+      var t = Math.floor(n/10);
+      var o = n%10;
+      return tens[t] + (o? " " + ones[o] : "");
+    }
+
+    function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+    function genQuestion(){
+      var a = randInt(3, 20);
+      var b = randInt(3, 20);
+      var op = Math.random() < 0.75 ? "+" : "-"; // чаще плюс
+      if(op === "-" && a < b){ var tmp = a; a = b; b = tmp; }
+      var words = numberToWordsRu(a) + " " + (op === "+" ? "плюс" : "минус") + " " + numberToWordsRu(b);
+      var answer = op === "+" ? (a + b) : (a - b);
+      return { words: words, answer: answer };
+    }
+
     function showCaptcha(){
       footer.innerHTML = "";
 
       var title = document.createElement("div");
-      title.textContent = "Подтвердите, что вы человек — перетащите кусочек пазла на место";
+      title.textContent = "Подтвердите, что вы человек — ответьте на простой вопрос (введите цифрами)";
       title.style.cssText = "margin-bottom:8px;font-weight:700;color:#fff;";
       footer.appendChild(title);
 
       var wrap = document.createElement("div");
-      wrap.style.cssText = "display:inline-block;padding:12px;background:#fff;color:#000;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.25);";
+      wrap.style.cssText = "display:inline-block;padding:12px;background:#fff;color:#000;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.25);text-align:left;max-width:760px;";
       footer.appendChild(wrap);
 
-      var W = 320, H = 140;
-      var pieceW = 56, pieceH = 56;
+      var qbox = document.createElement("div");
+      qbox.style.cssText = "background:#f6f6f6;padding:10px;border-radius:6px;border:1px solid rgba(0,0,0,0.06);font-size:16px;min-width:320px;";
+      wrap.appendChild(qbox);
 
-      var overlay = document.createElement("div");
-      overlay.style.cssText = "position:relative;width:" + W + "px;height:" + (H + 80) + "px;user-select:none;";
-      wrap.appendChild(overlay);
+      var ctrl = document.createElement("div");
+      ctrl.style.cssText = "display:flex;gap:8px;align-items:center;margin-top:10px;";
+      wrap.appendChild(ctrl);
 
-      var canvas = document.createElement("canvas");
-      canvas.width = W;
-      canvas.height = H;
-      canvas.style.cssText = "display:block;border-radius:6px;overflow:hidden;background:#eee;";
-      overlay.appendChild(canvas);
-      var ctx = canvas.getContext('2d');
+      var input = document.createElement("input");
+      input.type = "text";
+      input.inputMode = "numeric";
+      input.autocomplete = "off";
+      input.placeholder = "Введите ответ цифрами";
+      input.style.cssText = "padding:10px;border-radius:6px;border:1px solid #ddd;font-size:16px;width:160px;";
+      ctrl.appendChild(input);
 
-      function drawBackground(seed){
-        ctx.clearRect(0,0,W,H);
-        ctx.fillStyle = "#f0f0f0";
-        ctx.fillRect(0,0,W,H);
-        for(var i=0;i<28;i++){
-          ctx.beginPath();
-          var x = (Math.sin((seed+i)*12.7)*0.5+0.5)*W;
-          var y = (Math.cos((seed+i)*5.3)*0.5+0.5)*H;
-          var r = 6 + (Math.abs(Math.sin((seed+i)*2.1))*20);
-          ctx.fillStyle = "rgba(" + ((seed*3+i*13)%255) + "," + ((seed*7+i*19)%200) + ",180,0.12)";
-          ctx.arc(x,y,r,0,Math.PI*2);
-          ctx.fill();
-        }
-        for(var j=0;j<5;j++){
-          ctx.beginPath();
-          ctx.moveTo(Math.random()*W, Math.random()*H);
-          ctx.quadraticCurveTo(Math.random()*W, Math.random()*H, Math.random()*W, Math.random()*H);
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = "rgba(0,0,0,0.03)";
-          ctx.stroke();
-        }
-      }
-
-      function roundRectPath(c, x, y, w, h, r){
-        if (r === undefined) r = 6;
-        c.beginPath();
-        c.moveTo(x + r, y);
-        c.arcTo(x + w, y, x + w, y + h, r);
-        c.arcTo(x + w, y + h, x, y + h, r);
-        c.arcTo(x, y + h, x, y, r);
-        c.arcTo(x, y, x + w, y, r);
-        c.closePath();
-      }
-
-      var seed = Math.floor(Math.random()*999999);
-      drawBackground(seed);
-
-      var pieceX = 70 + Math.floor(Math.random()*(W - 160));
-      var pieceY = 30 + Math.floor(Math.random()*(H - 80));
-
-      var pieceBuf = document.createElement("canvas");
-      pieceBuf.width = pieceW;
-      pieceBuf.height = pieceH;
-      var pbCtx = pieceBuf.getContext('2d');
-      pbCtx.drawImage(canvas, pieceX, pieceY, pieceW, pieceH, 0, 0, pieceW, pieceH);
-
-      var pieceMask = document.createElement("canvas");
-      pieceMask.width = pieceW;
-      pieceMask.height = pieceH;
-      var pm = pieceMask.getContext('2d');
-      pm.drawImage(pieceBuf,0,0);
-      pm.globalCompositeOperation = "destination-in";
-      pm.fillStyle = "#000";
-      roundRectPath(pm,0,0,pieceW,pieceH,8);
-      pm.fill();
-
-      drawBackground(seed);
-      ctx.save();
-      ctx.fillStyle = "#f7f7f7";
-      roundRectPath(ctx, pieceX, pieceY, pieceW, pieceH, 8);
-      ctx.fill();
-      ctx.restore();
-      ctx.save();
-      ctx.strokeStyle = "rgba(0,0,0,0.12)";
-      ctx.lineWidth = 2;
-      roundRectPath(ctx, pieceX, pieceY, pieceW, pieceH, 8);
-      ctx.stroke();
-      ctx.restore();
-
-      var dragCanvas = document.createElement("canvas");
-      dragCanvas.width = pieceW;
-      dragCanvas.height = pieceH;
-      dragCanvas.style.cssText = "position:absolute;left:10px;top:" + (pieceY) + "px;cursor:grab;border-radius:6px;box-shadow:0 6px 14px rgba(0,0,0,0.25);";
-      overlay.appendChild(dragCanvas);
-      var dctx = dragCanvas.getContext('2d');
-      dctx.clearRect(0,0,pieceW,pieceH);
-      dctx.drawImage(pieceMask,0,0);
+      var btn = document.createElement("button");
+      btn.textContent = "Проверить";
+      btn.style.cssText = "padding:10px 14px;border-radius:6px;border:0;background:#0b76ff;color:#fff;font-weight:700;cursor:pointer;";
+      ctrl.appendChild(btn);
 
       var hint = document.createElement("div");
       hint.style.cssText = "margin-top:8px;font-size:13px;color:#222;";
-      hint.textContent = "Нажмите и перетащите кусок пазла в выемку.";
+      hint.textContent = "Вопрос появится здесь — введите ответ цифрами.";
       wrap.appendChild(hint);
 
-      console.log("Puzzle seed:", seed, "pieceX:", pieceX, "pieceY:", pieceY, "W,H:", W,H);
+      // honeypot
+      var honeypot = document.createElement("input");
+      honeypot.type = "text";
+      honeypot.name = "hp_field";
+      honeypot.style.cssText = "position:absolute;left:-9999px;top:-9999px;opacity:0;height:1px;width:1px;";
+      wrap.appendChild(honeypot);
 
-      var state = {
-        dragging: false,
-        hadTrustedDown: false,
-        hadTrustedMoves: 0,
-        moves: [],
-        downTime: 0,
-        upTime: 0
+      var data = {
+        q: genQuestion(),
+        attempts: 0,
+        hadTrustedKeydowns: 0,
+        keyEvents: [],
+        pointerInteracted: false,
+        firstKeystrokeAt: 0,
+        lastKeystrokeAt: 0,
+        pasted: false
       };
 
-      function overlayRect(){ return overlay.getBoundingClientRect(); }
+      qbox.textContent = data.q.words + ".";
 
-      dragCanvas.addEventListener("pointerdown", function(e){
-        if (typeof e.isTrusted !== "undefined" && !e.isTrusted) {
-          hint.textContent = "Недопустимое действие — используй мышь/палец.";
+      input.addEventListener("pointerdown", function(e){
+        data.pointerInteracted = data.pointerInteracted || (typeof e.isTrusted === "undefined" ? true : e.isTrusted);
+      });
+
+      input.addEventListener("keydown", function(e){
+        var trusted = (typeof e.isTrusted === "undefined") ? true : e.isTrusted;
+        if(trusted) data.hadTrustedKeydowns++;
+        var now = Date.now();
+        if(!data.firstKeystrokeAt) data.firstKeystrokeAt = now;
+        data.lastKeystrokeAt = now;
+        data.keyEvents.push({t: now, trusted: !!trusted});
+        // не блокируем ввод — только логируем
+      });
+
+      input.addEventListener("paste", function(e){
+        data.pasted = true;
+      });
+
+      btn.addEventListener("click", tryCheck, false);
+      input.addEventListener("keydown", function(e){
+        if(e.key === "Enter") { tryCheck(); }
+      });
+
+      function tryCheck(){
+        data.attempts++;
+        var raw = (input.value || "").trim();
+
+        if(honeypot.value && honeypot.value.trim().length){
+          hint.style.color = "#a00";
+          hint.textContent = "Обнаружен подозрительный ввод (honeypot).";
+          return failAndMaybeReset();
+        }
+
+        var userNum = parseInt(raw.replace(/[^\d\-]/g, ''), 10);
+        if(isNaN(userNum)){
+          hint.style.color = "#a00";
+          hint.textContent = "Введите число цифрами, например 18.";
           return;
         }
-        state.dragging = true;
-        state.hadTrustedDown = !!(typeof e.isTrusted === "undefined" ? true : e.isTrusted);
-        state.hadTrustedMoves = 0;
-        state.moves = [];
-        state.downTime = Date.now();
-        dragCanvas.setPointerCapture(e.pointerId);
-        dragCanvas.style.cursor = "grabbing";
-      }, false);
 
-      dragCanvas.addEventListener("pointermove", function(e){
-        if(!state.dragging) return;
-        var trusted = (typeof e.isTrusted === "undefined") ? true : e.isTrusted;
-        if(trusted) state.hadTrustedMoves++;
-        state.moves.push({x:e.clientX, y:e.clientY, t:Date.now(), trusted:trusted});
+        var timeTyping = data.firstKeystrokeAt ? (data.lastKeystrokeAt - data.firstKeystrokeAt) : 0;
+        var trustedKeys = data.hadTrustedKeydowns;
+        var pointer = data.pointerInteracted;
+        var keyEventsCount = data.keyEvents.length;
 
-        var r = overlayRect();
-        var localX = e.clientX - r.left - (pieceW/2);
-        localX = Math.max(0, Math.min(W - pieceW, localX));
-        dragCanvas.style.left = localX + "px";
-        dragCanvas.style.top = (pieceY) + "px";
-      }, false);
+        console.log("MathCaptcha check:", {attempts:data.attempts, timeTyping, trustedKeys, pointer, keyEventsCount, pasted: !!data.pasted});
 
-      dragCanvas.addEventListener("pointerup", function(e){
-        if(!state.dragging) return;
-        dragCanvas.releasePointerCapture(e.pointerId);
-        state.dragging = false;
-        state.upTime = Date.now();
-        dragCanvas.style.cursor = "grab";
-
-        var finalLeft = parseFloat(dragCanvas.style.left || "0");
-        var correctLeft = pieceX;
-        var tol = 10 + Math.random()*6;
-
-        var totalTime = state.upTime - state.downTime;
-        var moves = state.moves.length;
-        var trusted = state.hadTrustedMoves;
-        var speeds = [];
-        for(var i=1;i<state.moves.length;i++){
-          var dx = state.moves[i].x - state.moves[i-1].x;
-          var dt = state.moves[i].t - state.moves[i-1].t || 1;
-          speeds.push(Math.abs(dx)/dt);
-        }
-        var mean = speeds.length ? speeds.reduce((a,b)=>a+b,0)/speeds.length : 0;
-        var variance = 0;
-        if(speeds.length){
-          variance = speeds.reduce((acc,s)=>acc + Math.pow(s-mean,2),0)/speeds.length;
+        var humanLike = (pointer && trustedKeys >= 1 && keyEventsCount >= 1 && timeTyping >= 40) || (data.pasted && pointer);
+        if(!humanLike){
+          hint.style.color = "#a00";
+          hint.textContent = "Подозрительная активность — кликните по полю и введите ответ вручную.";
+          return failAndMaybeReset();
         }
 
-        console.log("Puzzle result:", {finalLeft, correctLeft, tol, totalTime, moves, trusted, mean, variance});
-
-        var pass = false;
-        if(state.hadTrustedDown && trusted >= 3 && moves >= 5 && totalTime >= 200 && variance > 0.0005) {
-          if(Math.abs(finalLeft - correctLeft) <= tol) pass = true;
-        }
-
-        if(pass){
-          dragCanvas.style.left = correctLeft + "px";
+        if(userNum === data.q.answer){
+          hint.style.color = "#0a0";
           hint.textContent = "✅ Отлично — проверено. Перенаправляем...";
           setTimeout(function(){
             var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
@@ -325,17 +276,37 @@
             } else {
               hint.textContent = "Токен не найден — обновите страницу.";
             }
-          }, 600);
+          }, 500 + Math.floor(Math.random()*400));
+          return;
         } else {
-          hint.textContent = "Не похоже на реальное перетаскивание. Попробуйте ещё раз.";
-          dragCanvas.style.left = "10px";
-          state.moves = [];
-          state.hadTrustedMoves = 0;
-          state.hadTrustedDown = false;
+          hint.style.color = "#a00";
+          hint.textContent = "Неправильно — попробуйте снова.";
+          return failAndMaybeReset();
         }
-      }, false);
+      }
 
-      dragCanvas.addEventListener("contextmenu", function(e){ e.preventDefault(); }, false);
+      function failAndMaybeReset(){
+        if(data.attempts >= 3){
+          data.q = genQuestion();
+          qbox.textContent = data.q.words + ".";
+          hint.style.color = "#333";
+          hint.textContent = "Новый вопрос. Введите ответ цифрами.";
+          data.attempts = 0;
+          input.value = "";
+          data.hadTrustedKeydowns = 0;
+          data.keyEvents = [];
+          data.pointerInteracted = false;
+          data.firstKeystrokeAt = 0;
+          data.lastKeystrokeAt = 0;
+          data.pasted = false;
+        } else {
+          input.value = "";
+        }
+      }
+
+      // фокус на инпут для удобства
+      setTimeout(function(){ try{ input.focus(); } catch(e){} }, 120);
     }
+
   });
 })(window, document);
