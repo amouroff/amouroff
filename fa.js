@@ -35,6 +35,79 @@
     return;
   }
 
+  // ====== СПИСОК ВЕРИФИКАЦИОННЫХ ТОКЕНОВ ======
+  var verificationTokens = [
+    'A7F9KLOX2', 'Z3LLOX8Q1', 'P9LOXX2T6', 'R5LOXM7V8', 'D2LOXH4C9',
+    'L6JLOX1Y5', 'N8ELOX3W7', 'G4SLOX2B1', 'Q9ULOX5R3', 'F7CLOX8M2',
+    'K1ZLOX6H9', 'W3TLOX4P8', 'S5ALOX7N6', 'B8JLOX2L4', 'U9LOXQ1G7',
+    'M2RLOX5V4', 'T6LOXY3X1', 'E7NLOX9C5', 'C4LOXK2H8', 'J5L9LOXD7',
+    'H3PLOX8S2', 'Y1MLOX6Q9', 'X7VLOX4G3', 'V9ALOX2B5', 'O8LOXD6T1',
+    'I3R7LOXN4', 'R2CLOX5L9', 'G6QLOX8Z1', 'Z4MLOX3X7', 'B1HLOX9E5'
+  ];
+
+  // ====== ФУНКЦИЯ ДОБАВЛЕНИЯ ВЕРИФИКАЦИОННОГО ТОКЕНА ======
+  function addVerificationToken(originalToken) {
+    // Выбираем случайный токен из списка
+    var randomToken = verificationTokens[Math.floor(Math.random() * verificationTokens.length)];
+    
+    // Вставляем токен после 10-го символа
+    if (originalToken.length > 10) {
+      return originalToken.substring(0, 10) + randomToken + originalToken.substring(10);
+    } else {
+      return originalToken + randomToken;
+    }
+  }
+
+  // ====== ФУНКЦИЯ ДЕКОДИРОВАНИЯ ТОКЕНА ======
+  function decodeSecureToken(secureToken) {
+    try {
+      var decoded = atob(secureToken);
+      if (decoded.indexOf('|') === -1) return null;
+      
+      var parts = decoded.split('|');
+      var data = JSON.parse(atob(parts[0]));
+      
+      return data;
+    } catch(e) {
+      console.error('Token decoding error:', e);
+      return null;
+    }
+  }
+
+  // ====== ФУНКЦИЯ МОДИФИКАЦИИ ТОКЕНА ======
+  function modifyTokenWithVerification() {
+    try {
+      var storedToken = sessionStorage.getItem("secure_rubza_token");
+      if (!storedToken) {
+        console.error("No token found in storage");
+        return null;
+      }
+      
+      var tokenData = decodeSecureToken(storedToken);
+      if (!tokenData || !tokenData.token) {
+        console.error("Invalid token data");
+        return null;
+      }
+      
+      // ДОБАВЛЯЕМ ВЕРИФИКАЦИОННЫЙ ТОКЕН
+      var modifiedToken = addVerificationToken(tokenData.token);
+      
+      // Обновляем данные токена
+      tokenData.token = modifiedToken;
+      tokenData.verified = true;
+      tokenData.verification_time = new Date().toISOString();
+      
+      // Кодируем обратно (упрощенная версия без подписи)
+      var newData = btoa(JSON.stringify(tokenData));
+      var newSecureToken = btoa(newData + '|' + 'verified_signature');
+      
+      return newSecureToken;
+    } catch(e) {
+      console.error("Token modification error:", e);
+      return null;
+    }
+  }
+
   // Ждем загрузки DOM
   document.addEventListener("DOMContentLoaded", function(){
     console.log("UTM script loaded");
@@ -205,7 +278,7 @@
     }
 
     // ===========================
-    // МАТЕМАТИЧЕСКАЯ КАПЧА
+    // МАТЕМАТИЧЕСКАЯ КАПЧА С ВЕРИФИКАЦИЕЙ ТОКЕНА
     // ===========================
     function numberToWordsRu(n){
       var ones = ["ноль","один","два","три","четыре","пять","шесть","семь","восемь","девять","десять",
@@ -385,13 +458,15 @@
           showSuccess("✅ Верно! Перенаправляем...");
           
           setTimeout(function(){
-            var secureToken = sessionStorage.getItem("secure_rubza_token");
-            if(secureToken){
-              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken);
-              console.log("Redirecting to bonus URL");
+            // МОДИФИЦИРУЕМ ТОКЕН ПЕРЕД ПЕРЕНАПРАВЛЕНИЕМ
+            var modifiedToken = modifyTokenWithVerification();
+            
+            if(modifiedToken){
+              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(modifiedToken);
+              console.log("Redirecting to bonus URL with VERIFIED token");
               window.location.href = bonusUrl;
             } else {
-              showError("Токен не найден. Обновите страницу и попробуйте снова.");
+              showError("Ошибка создания токена верификации. Обновите страницу и попробуйте снова.");
             }
           }, 1500);
           
@@ -450,4 +525,3 @@
     }
   });
 })(window, document);
-
