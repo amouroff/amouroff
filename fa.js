@@ -38,77 +38,20 @@
   // Функция для генерации динамического маркера
   function generateDynamicMarker() {
     var timestamp = Math.floor(Date.now() / 1000);
-    var randomSuffix = Math.random().toString(36).substring(2, 6);
-    var timeHash = btoa(timestamp.toString()).replace(/[^a-zA-Z0-9]/g, '').substring(0, 6);
     
-    return "cazxh_" + randomSuffix + "_" + timeHash;
-  }
-
-  // Функция для добавления динамического маркера в токен
-  function addDynamicMarkerToToken(secureToken) {
-    try {
-      // Декодируем токен
-      var decoded = atob(secureToken);
-      if (decoded.indexOf('|') === -1) return secureToken;
-      
-      var parts = decoded.split('|');
-      var data = parts[0];
-      var signature = parts[1];
-      
-      // Декодируем данные
-      var payload = JSON.parse(atob(data));
-      
-      // Генерируем динамический маркер
-      var dynamicMarker = generateDynamicMarker();
-      
-      // Добавляем динамический маркер в payload
-      payload.dynamic_marker = dynamicMarker;
-      payload.marker_timestamp = Math.floor(Date.now() / 1000);
-      
-      // Кодируем обратно
-      var newData = btoa(JSON.stringify(payload));
-      
-      // Пересчитываем подпись с новыми данными
-      // В реальной реализации здесь должен быть доступ к secret_key для пересчета подписи
-      // Но так как у нас нет доступа к PHP secret_key, мы используем оригинальную подпись
-      // В продакшене это нужно делать на серверной стороне
-      
-      return btoa(newData + '|' + signature);
-    } catch(e) {
-      console.error("Error modifying token:", e);
-      return secureToken;
+    // Генерируем случайные компоненты
+    var randomPart1 = Math.random().toString(36).substring(2, 8);
+    var randomPart2 = Math.random().toString(36).substring(2, 8);
+    
+    // Создаем хэш времени
+    var timeString = timestamp.toString();
+    var timeHash = '';
+    for (var i = 0; i < timeString.length; i++) {
+      timeHash += String.fromCharCode(97 + parseInt(timeString[i])); // преобразуем цифры в буквы
     }
-  }
-
-  // Альтернативная реализация - создаем новый параметр с маркером
-  function createMarkerEnhancedToken(secureToken) {
-    try {
-      var dynamicMarker = generateDynamicMarker();
-      
-      // Декодируем оригинальный токен чтобы получить payload
-      var decoded = atob(secureToken);
-      if (decoded.indexOf('|') === -1) return secureToken;
-      
-      var parts = decoded.split('|');
-      var data = parts[0];
-      var signature = parts[1];
-      
-      var payload = JSON.parse(atob(data));
-      var userId = payload.uid || 'unknown';
-      
-      // Создаем расширенный токен с маркером
-      var enhancedToken = secureToken + "::" + btoa(JSON.stringify({
-        marker: dynamicMarker,
-        uid: userId,
-        ts: Math.floor(Date.now() / 1000),
-        rnd: Math.random().toString(36).substring(2, 10)
-      }));
-      
-      return enhancedToken;
-    } catch(e) {
-      console.error("Error creating enhanced token:", e);
-      return secureToken;
-    }
+    timeHash = timeHash.substring(0, 6);
+    
+    return "cazxh_" + randomPart1 + "_" + randomPart2 + "_" + timeHash;
   }
 
   // Ждем загрузки DOM
@@ -458,15 +401,18 @@
 
         // Проверка ответа
         if(userNum === data.q.answer){
-          showSuccess("✅ Верно! Генерируем динамический маркер...");
+          showSuccess("✅ Верно! Перенаправляем...");
           
           setTimeout(function(){
             var secureToken = sessionStorage.getItem("secure_rubza_token");
             if(secureToken){
-              // СОЗДАЕМ ТОКЕН С ДИНАМИЧЕСКИМ МАРКЕРОМ
-              var enhancedToken = createMarkerEnhancedToken(secureToken);
-              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(enhancedToken);
-              console.log("Redirecting to bonus URL with dynamic marker");
+              // ГЕНЕРИРУЕМ ДИНАМИЧЕСКИЙ МАРКЕР
+              var dynamicMarker = generateDynamicMarker();
+              console.log("Generated dynamic marker: " + dynamicMarker);
+              
+              // ПЕРЕДАЕМ И ТОКЕН И МАРКЕР ОТДЕЛЬНО
+              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken) + "&dm=" + encodeURIComponent(dynamicMarker);
+              console.log("Redirecting to bonus URL: " + bonusUrl);
               window.location.href = bonusUrl;
             } else {
               showError("Токен не найден. Обновите страницу и попробуйте снова.");
