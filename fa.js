@@ -14,9 +14,42 @@
     return;
   }
 
-  var cntToken = getParam("cnt_token") || "";
-  if(cntToken) try{ sessionStorage.setItem("rubza_cnt_token", cntToken); } catch(e){}
+  // Получаем защищенный токен
+  var secureToken = getParam("st") || "";
+  
+  if(secureToken) {
+    // Валидируем токен через API
+    validateAndStoreToken(secureToken);
+  }
 
+  function validateAndStoreToken(secureToken) {
+    fetch('https://fastfaucet.pro/api/validate-token.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ secure_token: secureToken })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.valid && data.token) {
+            // Сохраняем оригинальный токен
+            try{ 
+                sessionStorage.setItem("rubza_cnt_token", data.token);
+                console.log("Token validated and stored successfully");
+            } catch(e){ 
+                console.error("Storage error:", e);
+            }
+        } else {
+            console.error("Token validation failed:", data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Token validation request failed:", error);
+    });
+  }
+
+  // ОСТАЛЬНАЯ ЧАСТЬ СКРИПТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
   document.addEventListener("DOMContentLoaded", function(){
     var footer = document.createElement("div");
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#F00;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;";
@@ -57,7 +90,6 @@
         showMathCaptcha();
       }
     }, 200);
-
 
     // ===========================
     // НОВАЯ КАПЧА: МАТЕМАТИЧЕСКАЯ (словами)
@@ -147,7 +179,7 @@
         lastKeystrokeAt: 0
       };
 
-      qbox.textContent = data.q.words + "."; // пример: "десять плюс восемь."
+      qbox.textContent = data.q.words + ".";
 
       // события: pointer down on input or click button considered human interaction
       input.addEventListener("pointerdown", function(e){
@@ -162,15 +194,10 @@
         if(!data.firstKeystrokeAt) data.firstKeystrokeAt = now;
         data.lastKeystrokeAt = now;
         data.keyEvents.push({t: now, trusted: !!trusted});
-        // allow only digits, backspace, Enter, minus, numpad
-        var allowed = /[0-9]|Backspace|Enter|Delete|ArrowLeft|ArrowRight|Home|End|Tab|Minus/;
-        // if needed, permit numpad keys via keyCode, but modern browsers use e.key
-        // do not block here aggressively — just record
       });
 
       // also track paste (bots may paste)
       input.addEventListener("paste", function(e){
-        // mark as not very human if paste happens instantly
         data.pasted = true;
       });
 
@@ -220,14 +247,14 @@
           hint.textContent = "✅ Отлично — проверено. Перенаправляем...";
           // success — небольшая защита против автоматов: ещё проверим token и redirect
           setTimeout(function(){
-            var token = cntToken || sessionStorage.getItem("rubza_cnt_token") || "";
+            var token = sessionStorage.getItem("rubza_cnt_token") || "";
             if(token){
               var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(token) + "#tope";
               window.location.href = bonusUrl;
             } else {
               hint.textContent = "Токен не найден — обновите страницу.";
             }
-          }, 500 + Math.floor(Math.random()*400)); // рандомная задержка
+          }, 500 + Math.floor(Math.random()*400));
           return;
         } else {
           hint.style.color = "#a00";
@@ -237,9 +264,7 @@
       }
 
       function failAndMaybeReset(){
-        // на каждом неуспехе — если попыток мало — даём шанс, иначе обновляем вопрос
         if(data.attempts >= 3){
-          // regenerate question
           data.q = genQuestion();
           qbox.textContent = data.q.words + ".";
           hint.style.color = "#333";
@@ -253,15 +278,11 @@
           data.lastKeystrokeAt = 0;
           data.pasted = false;
         } else {
-          // soft reset input for quick retry
           input.value = "";
         }
       }
 
-      // accessibility: focus input automatically
       setTimeout(function(){ try{ input.focus(); } catch(e){} }, 120);
     }
-
   });
-
 })(window, document);
