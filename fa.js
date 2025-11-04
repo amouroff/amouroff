@@ -44,11 +44,13 @@
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#2196F3;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;box-shadow:0 -2px 10px rgba(0,0,0,0.2);";
     document.body.appendChild(footer);
 
-    var waitSec = 30; // Фиксированное время 30 секунд
+    // Рандомный таймер от 30 до 53 секунд
+    var waitSec = Math.floor(Math.random() * (53 - 30 + 1)) + 30;
     var needMs = waitSec * 1000;
     var gainedMs = 0;
     var lastTick = Date.now();
     var isActive = !document.hidden;
+    var scrollTriggered = false;
 
     var timerBox = document.createElement("span");
     timerBox.style.fontWeight = "bold";
@@ -84,12 +86,123 @@
         
       timerBox.textContent = "⏳ Ожидание: " + timeString + " (вкладка должна быть активна)";
 
+      // Триггер скролла через 5-10 секунд после старта
+      var elapsedMs = needMs - remainMs;
+      if (!scrollTriggered && elapsedMs > 5000 && elapsedMs < 10000) {
+        var scrollChance = Math.random();
+        if (scrollChance > 0.3) { // 70% вероятность скролла
+          triggerHumanLikeScroll();
+          scrollTriggered = true;
+        }
+      }
+
       if (remainMs <= 0) {
         clearInterval(timerId);
         timerBox.textContent = "✅ Время вышло! Загружаем проверку...";
         setTimeout(showMathCaptcha, 1000);
       }
     }, 200);
+
+    // ===========================
+    // ФУНКЦИЯ ЧЕЛОВЕЧЕСКОГО СКРОЛЛА
+    // ===========================
+    function triggerHumanLikeScroll() {
+      console.log("Запуск человеческого скролла...");
+      
+      // Случайная цель скролла (может быть вверх или вниз)
+      var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      var maxScroll = Math.max(
+        document.body.scrollHeight, 
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight, 
+        document.documentElement.offsetHeight,
+        document.body.clientHeight, 
+        document.documentElement.clientHeight
+      ) - window.innerHeight;
+      
+      // Выбираем случайную позицию для скролла
+      var targetScroll;
+      var scrollDirection = Math.random() > 0.5 ? 'down' : 'up';
+      
+      if (scrollDirection === 'down') {
+        // Скролл вниз - от текущей позиции до случайной точки ниже
+        var minTarget = Math.min(currentScroll + 100, maxScroll);
+        var maxTarget = Math.min(currentScroll + 600, maxScroll);
+        targetScroll = Math.floor(Math.random() * (maxTarget - minTarget + 1)) + minTarget;
+      } else {
+        // Скролл вверх - от текущей позиции до случайной точки выше
+        var minTarget = Math.max(0, currentScroll - 600);
+        var maxTarget = Math.max(0, currentScroll - 100);
+        targetScroll = Math.floor(Math.random() * (maxTarget - minTarget + 1)) + minTarget;
+      }
+      
+      // Ограничиваем целевую позицию
+      targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+      
+      // Плавный скролл с человеческим поведением
+      var startTime = null;
+      var startPosition = currentScroll;
+      var duration = Math.random() * (4000 - 2000) + 2000; // 2-4 секунды
+      
+      // Функция плавного скролла с "дрожанием" как у человека
+      function smoothScroll(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var progress = timestamp - startTime;
+        var percent = Math.min(progress / duration, 1);
+        
+        // easing function для более естественного движения
+        var easeInOutCubic = function(t) {
+          return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+        };
+        
+        var easedPercent = easeInOutCubic(percent);
+        
+        // Добавляем небольшое случайное дрожание для реалистичности
+        var jitter = (Math.random() - 0.5) * 3; // ±1.5 пикселя дрожания
+        var newScroll = startPosition + (targetScroll - startPosition) * easedPercent + jitter;
+        
+        window.scrollTo(0, newScroll);
+        
+        if (progress < duration) {
+          // Случайная задержка между кадрами для имитации человеческого поведения
+          var nextDelay = Math.random() * (20 - 10) + 10;
+          setTimeout(function() {
+            requestAnimationFrame(smoothScroll);
+          }, nextDelay);
+        } else {
+          // После завершения основного скролла - небольшой дополнительный микродвижения
+          setTimeout(function() {
+            microAdjustments();
+          }, 500);
+        }
+      }
+      
+      // Микрокоррекции позиции после основного скролла
+      function microAdjustments() {
+        var finalPosition = window.pageYOffset || document.documentElement.scrollTop;
+        var smallMovement = Math.random() > 0.5 ? 
+          Math.min(finalPosition + 30, maxScroll) : 
+          Math.max(finalPosition - 30, 0);
+        
+        if (smallMovement !== finalPosition) {
+          window.scrollTo({
+            top: smallMovement,
+            behavior: 'smooth'
+          });
+        }
+      }
+      
+      // Запускаем скролл
+      requestAnimationFrame(smoothScroll);
+      
+      // Обновляем текст в футере на время скролла
+      var originalText = timerBox.textContent;
+      timerBox.textContent = "👀 Просматриваем страницу...";
+      
+      setTimeout(function() {
+        timerBox.textContent = originalText;
+      }, duration + 1000);
+    }
 
     // ===========================
     // МАТЕМАТИЧЕСКАЯ КАПЧА
