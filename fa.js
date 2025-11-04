@@ -35,25 +35,6 @@
     return;
   }
 
-  // Функция для генерации динамического маркера
-  function generateDynamicMarker() {
-    var timestamp = Math.floor(Date.now() / 1000);
-    
-    // Генерируем случайные компоненты
-    var randomPart1 = Math.random().toString(36).substring(2, 8);
-    var randomPart2 = Math.random().toString(36).substring(2, 8);
-    
-    // Создаем хэш времени
-    var timeString = timestamp.toString();
-    var timeHash = '';
-    for (var i = 0; i < timeString.length; i++) {
-      timeHash += String.fromCharCode(97 + parseInt(timeString[i])); // преобразуем цифры в буквы
-    }
-    timeHash = timeHash.substring(0, 6);
-    
-    return "cazxh_" + randomPart1 + "_" + randomPart2 + "_" + timeHash;
-  }
-
   // Ждем загрузки DOM
   document.addEventListener("DOMContentLoaded", function(){
     console.log("UTM script loaded");
@@ -406,13 +387,8 @@
           setTimeout(function(){
             var secureToken = sessionStorage.getItem("secure_rubza_token");
             if(secureToken){
-              // ГЕНЕРИРУЕМ ДИНАМИЧЕСКИЙ МАРКЕР
-              var dynamicMarker = generateDynamicMarker();
-              console.log("Generated dynamic marker: " + dynamicMarker);
-              
-              // ПЕРЕДАЕМ И ТОКЕН И МАРКЕР ОТДЕЛЬНО
-              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken) + "&dm=" + encodeURIComponent(dynamicMarker);
-              console.log("Redirecting to bonus URL: " + bonusUrl);
+              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken);
+              console.log("Redirecting to bonus URL");
               window.location.href = bonusUrl;
             } else {
               showError("Токен не найден. Обновите страницу и попробуйте снова.");
@@ -474,3 +450,4 @@
     }
   });
 })(window, document);
+
