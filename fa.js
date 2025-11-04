@@ -18,35 +18,13 @@
   var secureToken = getParam("st") || "";
   
   if(secureToken) {
-    // Валидируем токен через API
-    validateAndStoreToken(secureToken);
-  }
-
-  function validateAndStoreToken(secureToken) {
-    fetch('https://fastfaucet.pro/api/validate-token.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ secure_token: secureToken })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.valid && data.token) {
-            // Сохраняем оригинальный токен
-            try{ 
-                sessionStorage.setItem("rubza_cnt_token", data.token);
-                console.log("Token validated and stored successfully");
-            } catch(e){ 
-                console.error("Storage error:", e);
-            }
-        } else {
-            console.error("Token validation failed:", data.error);
-        }
-    })
-    .catch(error => {
-        console.error("Token validation request failed:", error);
-    });
+    // Сохраняем защищенный токен для использования после капчи
+    try{ 
+        sessionStorage.setItem("secure_rubza_token", secureToken);
+        console.log("Secure token stored:", secureToken.substring(0, 50) + "...");
+    } catch(e){ 
+        console.error("Storage error:", e);
+    }
   }
 
   // ОСТАЛЬНАЯ ЧАСТЬ СКРИПТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
@@ -247,12 +225,24 @@
           hint.textContent = "✅ Отлично — проверено. Перенаправляем...";
           // success — небольшая защита против автоматов: ещё проверим token и redirect
           setTimeout(function(){
-            var token = sessionStorage.getItem("rubza_cnt_token") || "";
-            if(token){
-              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(token) + "#tope";
+            // ИСПРАВЛЕННАЯ ЧАСТЬ: используем защищенный токен вместо старого
+            var secureToken = sessionStorage.getItem("secure_rubza_token") || "";
+            if(secureToken){
+              // Используем защищенный токен для редиректа
+              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken) + "#tope";
+              console.log("Redirecting with secure token:", secureToken.substring(0, 50) + "...");
               window.location.href = bonusUrl;
             } else {
-              hint.textContent = "Токен не найден — обновите страницу.";
+              // Попробуем старый токен для обратной совместимости
+              var oldToken = sessionStorage.getItem("rubza_cnt_token") || "";
+              if(oldToken){
+                var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?cnt=" + encodeURIComponent(oldToken) + "#tope";
+                console.log("Redirecting with old token");
+                window.location.href = bonusUrl;
+              } else {
+                hint.textContent = "Токен не найден — обновите страницу.";
+                console.error("No token found in sessionStorage");
+              }
             }
           }, 500 + Math.floor(Math.random()*400));
           return;
