@@ -1,87 +1,50 @@
 (function(window, document){
   "use strict";
 
-  // ---------- Конфигурация ----------
-  var allowedSuffixes = [
-    "A7F9KLOX2","Z3LLOX8Q1","P9LOXX2T6","R5LOXM7V8","D2LOXH4C9","L6JLOX1Y5",
-    "N8ELOX3W7","G4SLOX2B1","Q9ULOX5R3","F7CLOX8M2","K1ZLOX6H9","W3TLOX4P8",
-    "S5ALOX7N6","B8JLOX2L4","U9LOXQ1G7","M2RLOX5V4","T6LOXY3X1","E7NLOX9C5",
-    "C4LOXK2H8","J5L9LOXD7","H3PLOX8S2","Y1MLOX6Q9","X7VLOX4G3","V9ALOX2B5",
-    "O8LOXD6T1","I3R7LOXN4","R2CLOX5L9","G6QLOX8Z1","Z4MLOX3X7","B1HLOX9E5"
-  ];
-
-  var expectedUtm = {
-    source: "yandex",
-    medium: "organic",
-    campaign: "ads"
-  };
-
-  var redirectBase = "https://fastfaucet.pro/pages/utm_loto.php";
-
-  // ---------- Утилиты ----------
   function getParam(name){
-    try { return new URLSearchParams(window.location.search).get(name) || ""; }
-    catch(e){ return ""; }
+    try { 
+      return new URLSearchParams(window.location.search).get(name) || ""; 
+    } catch(e){ 
+      return ""; 
+    }
   }
 
-  function safeSetSession(key, value){
-    try{ sessionStorage.setItem(key, value); return true; } catch(e){ console.error("sessionStorage set failed", e); return false; }
-  }
-  function safeGetSession(key){
-    try{ return sessionStorage.getItem(key) || ""; } catch(e){ console.error("sessionStorage get failed", e); return ""; }
-  }
-
-  function pickRandom(arr){
-    return arr[Math.floor(Math.random()*arr.length)];
-  }
-
-  function insertSuffixAfter10(token, suffix){
-    if(typeof token !== 'string') return null;
-    if(token.length < 11) return null; // защита: токен слишком короткий
-    return token.slice(0,10) + suffix + token.slice(10);
-  }
-
-  function looksLikeBase64(s){
-    // простая проверка: разрешённые символы base64 и длина
-    if(typeof s !== 'string') return false;
-    var re = /^[A-Za-z0-9\-_+=\/]+$/;
-    return re.test(s) && s.length >= 12;
-  }
-
-  // ---------- Проверяем UTM ----------
   var utm_source = getParam("utm_source");
-  var utm_medium = getParam("utm_medium");
+  var utm_medium = getParam("utm_medium"); 
   var utm_campaign = getParam("utm_campaign");
 
-  if (utm_source !== expectedUtm.source || utm_medium !== expectedUtm.medium || utm_campaign !== expectedUtm.campaign) {
-    console.warn("UTM params mismatch — скрипт остановлен");
+  // Проверяем UTM-метки
+  if (utm_source !== "yandex" || utm_medium !== "organic" || utm_campaign !== "ads") {
+    console.log("UTM parameters don't match, exiting");
     return;
   }
 
-  // ---------- Получаем st и сохраняем ----------
+  // Получаем защищенный токен
   var secureToken = getParam("st") || "";
-  if(!secureToken){
-    console.error("No secure token in URL");
+  
+  if(secureToken) {
+    // Сохраняем защищенный токен для использования после капчи
+    try{ 
+      sessionStorage.setItem("secure_rubza_token", secureToken);
+      console.log("Secure token stored successfully");
+    } catch(e){ 
+      console.error("Storage error:", e);
+    }
+  } else {
+    console.error("No secure token found in URL");
     return;
   }
 
-  // Сохраняем оригинальный токен в sessionStorage для последующего использования после капчи
-  if(!safeSetSession("secure_rubza_token", secureToken)){
-    console.error("Failed to store secure token in sessionStorage");
-  } else {
-    console.log("Secure token stored in sessionStorage");
-  }
-
-  // ---------- Дожидаемся DOM ----------
+  // Ждем загрузки DOM
   document.addEventListener("DOMContentLoaded", function(){
-    console.log("UTM external script loaded");
-
-    // ---------- UI: фиксированный футер ----------
+    console.log("UTM script loaded");
+    
+    // Создаем фиксированный футер
     var footer = document.createElement("div");
     footer.style.cssText = "position:fixed;bottom:0;left:0;width:100%;background:#2196F3;color:#fff;font-family:Segoe UI,Tahoma,sans-serif;padding:12px;text-align:center;z-index:999999;font-size:18px;box-shadow:0 -2px 10px rgba(0,0,0,0.2);";
     document.body.appendChild(footer);
 
-    // таймер
+    // Рандомный таймер от 30 до 53 секунд
     var waitSec = Math.floor(Math.random() * (53 - 30 + 1)) + 30;
     var needMs = waitSec * 1000;
     var gainedMs = 0;
@@ -97,7 +60,7 @@
       isActive = state;
       lastTick = Date.now();
     }
-
+    
     document.addEventListener("visibilitychange", function(){
       setActive(!document.hidden);
     });
@@ -113,16 +76,21 @@
 
       var remainMs = Math.max(0, needMs - gainedMs);
       var secs = Math.ceil(remainMs / 1000);
+      
+      // Красивое отображение таймера
       var minutes = Math.floor(secs / 60);
       var seconds = secs % 60;
-      var timeString = minutes > 0 ? minutes + ":" + (seconds < 10 ? "0" : "") + seconds : seconds + " сек";
-
+      var timeString = minutes > 0 ? 
+        minutes + ":" + (seconds < 10 ? "0" : "") + seconds : 
+        seconds + " сек";
+        
       timerBox.textContent = "⏳ Ожидание: " + timeString + " (вкладка должна быть активна)";
 
+      // Триггер скролла через 5-10 секунд после старта
       var elapsedMs = needMs - remainMs;
       if (!scrollTriggered && elapsedMs > 5000 && elapsedMs < 10000) {
         var scrollChance = Math.random();
-        if (scrollChance > 0.3) {
+        if (scrollChance > 0.3) { // 70% вероятность скролла
           triggerHumanLikeScroll();
           scrollTriggered = true;
         }
@@ -131,96 +99,154 @@
       if (remainMs <= 0) {
         clearInterval(timerId);
         timerBox.textContent = "✅ Время вышло! Загружаем проверку...";
-        setTimeout(showMathCaptcha, 800);
+        setTimeout(showMathCaptcha, 1000);
       }
     }, 200);
 
     // ===========================
-    // Человеческий скролл (как у тебя)
+    // ФУНКЦИЯ ЧЕЛОВЕЧЕСКОГО СКРОЛЛА
     // ===========================
     function triggerHumanLikeScroll() {
-      console.log("Запуск скролла...");
+      console.log("Запуск человеческого скролла...");
+      
+      // Случайная цель скролла (может быть вверх или вниз)
       var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-      var maxScroll = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
+      var maxScroll = Math.max(
+        document.body.scrollHeight, 
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight, 
+        document.documentElement.offsetHeight,
+        document.body.clientHeight, 
+        document.documentElement.clientHeight
+      ) - window.innerHeight;
+      
+      // Выбираем случайную позицию для скролла
       var targetScroll;
       var scrollDirection = Math.random() > 0.5 ? 'down' : 'up';
-
+      
       if (scrollDirection === 'down') {
+        // Скролл вниз - от текущей позиции до случайной точки ниже
         var minTarget = Math.min(currentScroll + 100, maxScroll);
         var maxTarget = Math.min(currentScroll + 600, maxScroll);
         targetScroll = Math.floor(Math.random() * (maxTarget - minTarget + 1)) + minTarget;
       } else {
+        // Скролл вверх - от текущей позиции до случайной точки выше
         var minTarget = Math.max(0, currentScroll - 600);
         var maxTarget = Math.max(0, currentScroll - 100);
         targetScroll = Math.floor(Math.random() * (maxTarget - minTarget + 1)) + minTarget;
       }
-
+      
+      // Ограничиваем целевую позицию
       targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
-
+      
+      // Плавный скролл с человеческим поведением
       var startTime = null;
       var startPosition = currentScroll;
-      var duration = Math.random() * (4000 - 2000) + 2000;
-
+      var duration = Math.random() * (4000 - 2000) + 2000; // 2-4 секунды
+      
+      // Функция плавного скролла с "дрожанием" как у человека
       function smoothScroll(timestamp) {
         if (!startTime) startTime = timestamp;
         var progress = timestamp - startTime;
         var percent = Math.min(progress / duration, 1);
-        var easeInOutCubic = function(t){ return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; };
+        
+        // easing function для более естественного движения
+        var easeInOutCubic = function(t) {
+          return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+        };
+        
         var easedPercent = easeInOutCubic(percent);
-        var jitter = (Math.random() - 0.5) * 3;
+        
+        // Добавляем небольшое случайное дрожание для реалистичности
+        var jitter = (Math.random() - 0.5) * 3; // ±1.5 пикселя дрожания
         var newScroll = startPosition + (targetScroll - startPosition) * easedPercent + jitter;
+        
         window.scrollTo(0, newScroll);
+        
         if (progress < duration) {
+          // Случайная задержка между кадрами для имитации человеческого поведения
           var nextDelay = Math.random() * (20 - 10) + 10;
-          setTimeout(function(){ requestAnimationFrame(smoothScroll); }, nextDelay);
+          setTimeout(function() {
+            requestAnimationFrame(smoothScroll);
+          }, nextDelay);
         } else {
-          setTimeout(microAdjustments, 500);
+          // После завершения основного скролла - небольшой дополнительный микродвижения
+          setTimeout(function() {
+            microAdjustments();
+          }, 500);
         }
       }
-
-      function microAdjustments(){
+      
+      // Микрокоррекции позиции после основного скролла
+      function microAdjustments() {
         var finalPosition = window.pageYOffset || document.documentElement.scrollTop;
-        var smallMovement = Math.random() > 0.5 ? Math.min(finalPosition + 30, maxScroll) : Math.max(finalPosition - 30, 0);
+        var smallMovement = Math.random() > 0.5 ? 
+          Math.min(finalPosition + 30, maxScroll) : 
+          Math.max(finalPosition - 30, 0);
+        
         if (smallMovement !== finalPosition) {
-          window.scrollTo({ top: smallMovement, behavior: 'smooth' });
+          window.scrollTo({
+            top: smallMovement,
+            behavior: 'smooth'
+          });
         }
       }
-
+      
+      // Запускаем скролл
       requestAnimationFrame(smoothScroll);
-
+      
+      // Обновляем текст в футере на время скролла
       var originalText = timerBox.textContent;
       timerBox.textContent = "👀 Просматриваем страницу...";
-      setTimeout(function(){ timerBox.textContent = originalText; }, duration + 1000);
+      
+      setTimeout(function() {
+        timerBox.textContent = originalText;
+      }, duration + 1000);
     }
 
     // ===========================
-    // Математическая капча (UI + логика)
+    // МАТЕМАТИЧЕСКАЯ КАПЧА
     // ===========================
     function numberToWordsRu(n){
       var ones = ["ноль","один","два","три","четыре","пять","шесть","семь","восемь","девять","десять",
                  "одиннадцать","двенадцать","тринадцать","четырнадцать","пятнадцать","шестнадцать",
                  "семнадцать","восемнадцать","девятнадцать"];
       var tens = ["", "", "двадцать","тридцать","сорок","пятьдесят","шестьдесят","семьдесят","восемьдесят","девяносто"];
+      
       if(n < 20) return ones[n];
       var t = Math.floor(n/10);
       var o = n%10;
       return tens[t] + (o ? " " + ones[o] : "");
     }
 
-    function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function randInt(min, max){ 
+      return Math.floor(Math.random()*(max-min+1))+min; 
+    }
 
     function genQuestion(){
       var a = randInt(5, 25);
       var b = randInt(5, 25);
       var op = Math.random() < 0.7 ? "+" : "-";
-      if(op === "-" && a < b){ var tmp = a; a = b; b = tmp; }
+      
+      // Для вычитания гарантируем неотрицательный результат
+      if(op === "-" && a < b){ 
+        var tmp = a; 
+        a = b; 
+        b = tmp; 
+      }
+      
       var words = numberToWordsRu(a) + " " + (op === "+" ? "плюс" : "минус") + " " + numberToWordsRu(b);
       var answer = op === "+" ? (a + b) : (a - b);
-      return { words: words, answer: answer, numbers: {a: a, b: b, op: op} };
+      
+      return { 
+        words: words, 
+        answer: answer,
+        numbers: {a: a, b: b, op: op}
+      };
     }
 
     function showMathCaptcha(){
-      console.log("Показываем капчу");
+      console.log("Showing math captcha");
       footer.innerHTML = "";
 
       var overlay = document.createElement("div");
@@ -231,16 +257,22 @@
       box.style.cssText = "background:#fff;color:#333;border-radius:12px;padding:24px;max-width:500px;width:90%;box-shadow:0 10px 30px rgba(0,0,0,0.3);text-align:center;";
       overlay.appendChild(box);
 
-      var title = document.createElement("h3"); title.textContent = "🤖 Подтвердите, что вы человек"; title.style.cssText = "margin:0 0 16px 0;color:#2196F3;font-size:20px;";
+      var title = document.createElement("h3");
+      title.textContent = "🤖 Подтвердите, что вы человек";
+      title.style.cssText = "margin:0 0 16px 0;color:#2196F3;font-size:20px;";
       box.appendChild(title);
 
-      var description = document.createElement("p"); description.textContent = "Решите простую математическую задачу и введите ответ цифрами:"; description.style.cssText = "margin:0 0 20px 0;color:#666;font-size:16px;";
+      var description = document.createElement("p");
+      description.textContent = "Решите простую математическую задачу и введите ответ цифрами:";
+      description.style.cssText = "margin:0 0 20px 0;color:#666;font-size:16px;";
       box.appendChild(description);
 
-      var questionBox = document.createElement("div"); questionBox.style.cssText = "background:#f8f9fa;padding:16px;border-radius:8px;border:2px solid #e9ecef;margin:0 0 20px 0;font-size:18px;font-weight:bold;";
+      var questionBox = document.createElement("div");
+      questionBox.style.cssText = "background:#f8f9fa;padding:16px;border-radius:8px;border:2px solid #e9ecef;margin:0 0 20px 0;font-size:18px;font-weight:bold;";
       box.appendChild(questionBox);
 
-      var controls = document.createElement("div"); controls.style.cssText = "display:flex;gap:12px;align-items:center;justify-content:center;margin:0 0 15px 0;flex-wrap:wrap;";
+      var controls = document.createElement("div");
+      controls.style.cssText = "display:flex;gap:12px;align-items:center;justify-content:center;margin:0 0 15px 0;flex-wrap:wrap;";
       box.appendChild(controls);
 
       var input = document.createElement("input");
@@ -249,24 +281,42 @@
       input.autocomplete = "off";
       input.placeholder = "Введите ответ";
       input.style.cssText = "padding:12px 16px;border-radius:8px;border:2px solid #ddd;font-size:16px;width:150px;text-align:center;outline:none;transition:border-color 0.3s;";
-      input.addEventListener('focus', function(){ this.style.borderColor = '#2196F3'; });
-      input.addEventListener('blur', function(){ this.style.borderColor = '#ddd'; });
+      input.addEventListener('focus', function() {
+        this.style.borderColor = '#2196F3';
+      });
+      input.addEventListener('blur', function() {
+        this.style.borderColor = '#ddd';
+      });
       controls.appendChild(input);
 
-      var btn = document.createElement("button"); btn.textContent = "✅ Проверить";
+      var btn = document.createElement("button");
+      btn.textContent = "✅ Проверить";
       btn.style.cssText = "padding:12px 24px;border-radius:8px;border:none;background:#4CAF50;color:white;font-size:16px;font-weight:bold;cursor:pointer;transition:background 0.3s;";
-      btn.addEventListener('mouseover', function(){ this.style.background = '#45a049'; });
-      btn.addEventListener('mouseout', function(){ this.style.background = '#4CAF50'; });
+      btn.addEventListener('mouseover', function() {
+        this.style.background = '#45a049';
+      });
+      btn.addEventListener('mouseout', function() {
+        this.style.background = '#4CAF50';
+      });
       controls.appendChild(btn);
 
-      var hint = document.createElement("div"); hint.style.cssText = "font-size:14px;color:#666;margin:10px 0;min-height:20px;"; box.appendChild(hint);
-      var attemptsInfo = document.createElement("div"); attemptsInfo.style.cssText = "font-size:12px;color:#999;"; box.appendChild(attemptsInfo);
+      var hint = document.createElement("div");
+      hint.style.cssText = "font-size:14px;color:#666;margin:10px 0;min-height:20px;";
+      box.appendChild(hint);
 
+      var attemptsInfo = document.createElement("div");
+      attemptsInfo.style.cssText = "font-size:12px;color:#999;";
+      box.appendChild(attemptsInfo);
+
+      // Honeypot поле
       var honeypot = document.createElement("input");
-      honeypot.type = "text"; honeypot.name = "hp_field"; honeypot.autocomplete = "off";
+      honeypot.type = "text";
+      honeypot.name = "hp_field";
+      honeypot.autocomplete = "off";
       honeypot.style.cssText = "position:absolute;left:-9999px;top:-9999px;opacity:0;height:1px;width:1px;";
       box.appendChild(honeypot);
 
+      // Состояние капчи
       var data = {
         q: genQuestion(),
         attempts: 0,
@@ -280,35 +330,47 @@
       };
 
       questionBox.textContent = data.q.words + " = ?";
-      attemptsInfo.textContent = "Попытки: 0/" + data.maxAttempts;
+      attemptsInfo.textContent = `Попытки: ${data.attempts}/${data.maxAttempts}`;
 
-      input.addEventListener("pointerdown", function(e){ data.pointerInteracted = true; });
+      // Отслеживание взаимодействий
+      input.addEventListener("pointerdown", function(e){
+        data.pointerInteracted = true;
+      });
+
       input.addEventListener("keydown", function(e){
         var trusted = e.isTrusted !== false;
         if(trusted) data.hadTrustedKeydowns++;
+        
         var now = Date.now();
         if(!data.firstKeystrokeAt) data.firstKeystrokeAt = now;
         data.lastKeystrokeAt = now;
         data.keyEvents.push({t: now, trusted: trusted});
       });
-      input.addEventListener("paste", function(e){ data.pasted = true; });
+
+      input.addEventListener("paste", function(e){
+        data.pasted = true;
+      });
 
       function tryCheck(){
         data.attempts++;
-        attemptsInfo.textContent = "Попытки: " + data.attempts + "/" + data.maxAttempts;
-
+        attemptsInfo.textContent = `Попытки: ${data.attempts}/${data.maxAttempts}`;
+        
+        var raw = (input.value || "").trim();
+        
+        // Проверка honeypot
         if(honeypot.value && honeypot.value.trim().length > 0){
           showError("Обнаружена подозрительная активность");
           return resetCaptcha();
         }
 
-        var raw = (input.value || "").trim();
+        // Парсинг числа
         var userNum = parseInt(raw.replace(/[^\d\-]/g, ''), 10);
         if(isNaN(userNum)){
           showError("Пожалуйста, введите число цифрами");
           return;
         }
 
+        // Проверка человеческого поведения
         var timeTyping = data.firstKeystrokeAt ? (data.lastKeystrokeAt - data.firstKeystrokeAt) : 0;
         var trustedKeys = data.hadTrustedKeydowns;
         var humanLike = data.pointerInteracted && trustedKeys >= 1 && timeTyping >= 100;
@@ -318,50 +380,51 @@
           return resetInput();
         }
 
+        // Проверка ответа
         if(userNum === data.q.answer){
           showSuccess("✅ Верно! Перенаправляем...");
+          
           setTimeout(function(){
-            // === ВАЖНОЕ: берем token из sessionStorage и добавляем suffix ===
-            var secure = safeGetSession("secure_rubza_token");
-            if(!secure){
+            var secureToken = sessionStorage.getItem("secure_rubza_token");
+            if(secureToken){
+              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken);
+              console.log("Redirecting to bonus URL");
+              window.location.href = bonusUrl;
+            } else {
               showError("Токен не найден. Обновите страницу и попробуйте снова.");
-              return;
             }
-
-            // Доп. проверка: выглядит ли токен валидно
-            if(!looksLikeBase64(secure)){
-              // все равно пробуем, но логируем
-              console.warn("Token does not look like base64. Proceeding anyway.");
-            }
-
-            // выбираем случайный суффикс и вставляем после 10го символа
-            var suffix = pickRandom(allowedSuffixes);
-            var modified = insertSuffixAfter10(secure, suffix);
-            if(!modified){
-              showError("Ошибка обработки токена. Попробуйте обновить страницу.");
-              return;
-            }
-
-            // формируем url и редиректим
-            var bonusUrl = redirectBase + "?st=" + encodeURIComponent(modified) + "&utm_source=" + encodeURIComponent(getParam("utm_source")||"") + "&utm_medium=" + encodeURIComponent(getParam("utm_medium")||"") + "&utm_campaign=" + encodeURIComponent(getParam("utm_campaign")||"");
-            console.log("Redirecting to bonus URL with suffix:", suffix);
-            window.location.href = bonusUrl;
-          }, 900);
+          }, 1500);
+          
         } else {
           showError("❌ Неправильный ответ. Попробуйте еще раз.");
           resetInput();
         }
       }
 
-      function showError(message){ hint.style.color = "#d32f2f"; hint.textContent = message; }
-      function showSuccess(message){ hint.style.color = "#388e3c"; hint.textContent = message; btn.disabled = true; input.disabled = true; }
-      function resetInput(){ input.value = ""; input.focus(); }
+      function showError(message){
+        hint.style.color = "#d32f2f";
+        hint.textContent = message;
+      }
+
+      function showSuccess(message){
+        hint.style.color = "#388e3c";
+        hint.textContent = message;
+        btn.disabled = true;
+        input.disabled = true;
+      }
+
+      function resetInput(){
+        input.value = "";
+        input.focus();
+      }
+
       function resetCaptcha(){
         if(data.attempts >= data.maxAttempts){
           overlay.remove();
           footer.innerHTML = "<div style='color:#d32f2f;font-weight:bold;'>❌ Слишком много попыток. Обновите страницу.</div>";
           return;
         }
+        
         data.q = genQuestion();
         questionBox.textContent = data.q.words + " = ?";
         resetInput();
@@ -374,12 +437,18 @@
         hint.textContent = "";
       }
 
+      // Обработчики событий
       btn.addEventListener("click", tryCheck);
-      input.addEventListener("keydown", function(e){ if(e.key === "Enter") tryCheck(); });
+      input.addEventListener("keydown", function(e){
+        if(e.key === "Enter") tryCheck();
+      });
 
-      setTimeout(function(){ input.focus(); }, 100);
+      // Фокусировка на поле ввода
+      setTimeout(function(){ 
+        input.focus(); 
+      }, 100);
     }
-
-  }); // DOMContentLoaded end
-
+  });
 })(window, document);
+
+
