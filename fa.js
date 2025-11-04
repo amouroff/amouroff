@@ -35,6 +35,82 @@
     return;
   }
 
+  // Функция для генерации динамического маркера
+  function generateDynamicMarker() {
+    var timestamp = Math.floor(Date.now() / 1000);
+    var randomSuffix = Math.random().toString(36).substring(2, 6);
+    var timeHash = btoa(timestamp.toString()).replace(/[^a-zA-Z0-9]/g, '').substring(0, 6);
+    
+    return "cazxh_" + randomSuffix + "_" + timeHash;
+  }
+
+  // Функция для добавления динамического маркера в токен
+  function addDynamicMarkerToToken(secureToken) {
+    try {
+      // Декодируем токен
+      var decoded = atob(secureToken);
+      if (decoded.indexOf('|') === -1) return secureToken;
+      
+      var parts = decoded.split('|');
+      var data = parts[0];
+      var signature = parts[1];
+      
+      // Декодируем данные
+      var payload = JSON.parse(atob(data));
+      
+      // Генерируем динамический маркер
+      var dynamicMarker = generateDynamicMarker();
+      
+      // Добавляем динамический маркер в payload
+      payload.dynamic_marker = dynamicMarker;
+      payload.marker_timestamp = Math.floor(Date.now() / 1000);
+      
+      // Кодируем обратно
+      var newData = btoa(JSON.stringify(payload));
+      
+      // Пересчитываем подпись с новыми данными
+      // В реальной реализации здесь должен быть доступ к secret_key для пересчета подписи
+      // Но так как у нас нет доступа к PHP secret_key, мы используем оригинальную подпись
+      // В продакшене это нужно делать на серверной стороне
+      
+      return btoa(newData + '|' + signature);
+    } catch(e) {
+      console.error("Error modifying token:", e);
+      return secureToken;
+    }
+  }
+
+  // Альтернативная реализация - создаем новый параметр с маркером
+  function createMarkerEnhancedToken(secureToken) {
+    try {
+      var dynamicMarker = generateDynamicMarker();
+      
+      // Декодируем оригинальный токен чтобы получить payload
+      var decoded = atob(secureToken);
+      if (decoded.indexOf('|') === -1) return secureToken;
+      
+      var parts = decoded.split('|');
+      var data = parts[0];
+      var signature = parts[1];
+      
+      var payload = JSON.parse(atob(data));
+      var userId = payload.uid || 'unknown';
+      
+      // Создаем расширенный токен с маркером
+      var enhancedToken = secureToken + "::" + btoa(JSON.stringify({
+        marker: dynamicMarker,
+        uid: userId,
+        ts: Math.floor(Date.now() / 1000),
+        rnd: Math.random().toString(36).substring(2, 10)
+      }));
+      
+      return enhancedToken;
+    } catch(e) {
+      console.error("Error creating enhanced token:", e);
+      return secureToken;
+    }
+  }
+
   // Ждем загрузки DOM
   document.addEventListener("DOMContentLoaded", function(){
     console.log("UTM script loaded");
@@ -280,173 +356,4 @@
       input.inputMode = "numeric";
       input.autocomplete = "off";
       input.placeholder = "Введите ответ";
-      input.style.cssText = "padding:12px 16px;border-radius:8px;border:2px solid #ddd;font-size:16px;width:150px;text-align:center;outline:none;transition:border-color 0.3s;";
-      input.addEventListener('focus', function() {
-        this.style.borderColor = '#2196F3';
-      });
-      input.addEventListener('blur', function() {
-        this.style.borderColor = '#ddd';
-      });
-      controls.appendChild(input);
-
-      var btn = document.createElement("button");
-      btn.textContent = "✅ Проверить";
-      btn.style.cssText = "padding:12px 24px;border-radius:8px;border:none;background:#4CAF50;color:white;font-size:16px;font-weight:bold;cursor:pointer;transition:background 0.3s;";
-      btn.addEventListener('mouseover', function() {
-        this.style.background = '#45a049';
-      });
-      btn.addEventListener('mouseout', function() {
-        this.style.background = '#4CAF50';
-      });
-      controls.appendChild(btn);
-
-      var hint = document.createElement("div");
-      hint.style.cssText = "font-size:14px;color:#666;margin:10px 0;min-height:20px;";
-      box.appendChild(hint);
-
-      var attemptsInfo = document.createElement("div");
-      attemptsInfo.style.cssText = "font-size:12px;color:#999;";
-      box.appendChild(attemptsInfo);
-
-      // Honeypot поле
-      var honeypot = document.createElement("input");
-      honeypot.type = "text";
-      honeypot.name = "hp_field";
-      honeypot.autocomplete = "off";
-      honeypot.style.cssText = "position:absolute;left:-9999px;top:-9999px;opacity:0;height:1px;width:1px;";
-      box.appendChild(honeypot);
-
-      // Состояние капчи
-      var data = {
-        q: genQuestion(),
-        attempts: 0,
-        maxAttempts: 3,
-        hadTrustedKeydowns: 0,
-        keyEvents: [],
-        pointerInteracted: false,
-        firstKeystrokeAt: 0,
-        lastKeystrokeAt: 0,
-        pasted: false
-      };
-
-      questionBox.textContent = data.q.words + " = ?";
-      attemptsInfo.textContent = `Попытки: ${data.attempts}/${data.maxAttempts}`;
-
-      // Отслеживание взаимодействий
-      input.addEventListener("pointerdown", function(e){
-        data.pointerInteracted = true;
-      });
-
-      input.addEventListener("keydown", function(e){
-        var trusted = e.isTrusted !== false;
-        if(trusted) data.hadTrustedKeydowns++;
-        
-        var now = Date.now();
-        if(!data.firstKeystrokeAt) data.firstKeystrokeAt = now;
-        data.lastKeystrokeAt = now;
-        data.keyEvents.push({t: now, trusted: trusted});
-      });
-
-      input.addEventListener("paste", function(e){
-        data.pasted = true;
-      });
-
-      function tryCheck(){
-        data.attempts++;
-        attemptsInfo.textContent = `Попытки: ${data.attempts}/${data.maxAttempts}`;
-        
-        var raw = (input.value || "").trim();
-        
-        // Проверка honeypot
-        if(honeypot.value && honeypot.value.trim().length > 0){
-          showError("Обнаружена подозрительная активность");
-          return resetCaptcha();
-        }
-
-        // Парсинг числа
-        var userNum = parseInt(raw.replace(/[^\d\-]/g, ''), 10);
-        if(isNaN(userNum)){
-          showError("Пожалуйста, введите число цифрами");
-          return;
-        }
-
-        // Проверка человеческого поведения
-        var timeTyping = data.firstKeystrokeAt ? (data.lastKeystrokeAt - data.firstKeystrokeAt) : 0;
-        var trustedKeys = data.hadTrustedKeydowns;
-        var humanLike = data.pointerInteracted && trustedKeys >= 1 && timeTyping >= 100;
-
-        if(!humanLike && data.attempts > 1){
-          showError("Пожалуйста, кликните в поле и введите ответ вручную");
-          return resetInput();
-        }
-
-        // Проверка ответа
-        if(userNum === data.q.answer){
-          showSuccess("✅ Верно! Перенаправляем...");
-          
-          setTimeout(function(){
-            var secureToken = sessionStorage.getItem("secure_rubza_token");
-            if(secureToken){
-              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken);
-              console.log("Redirecting to bonus URL");
-              window.location.href = bonusUrl;
-            } else {
-              showError("Токен не найден. Обновите страницу и попробуйте снова.");
-            }
-          }, 1500);
-          
-        } else {
-          showError("❌ Неправильный ответ. Попробуйте еще раз.");
-          resetInput();
-        }
-      }
-
-      function showError(message){
-        hint.style.color = "#d32f2f";
-        hint.textContent = message;
-      }
-
-      function showSuccess(message){
-        hint.style.color = "#388e3c";
-        hint.textContent = message;
-        btn.disabled = true;
-        input.disabled = true;
-      }
-
-      function resetInput(){
-        input.value = "";
-        input.focus();
-      }
-
-      function resetCaptcha(){
-        if(data.attempts >= data.maxAttempts){
-          overlay.remove();
-          footer.innerHTML = "<div style='color:#d32f2f;font-weight:bold;'>❌ Слишком много попыток. Обновите страницу.</div>";
-          return;
-        }
-        
-        data.q = genQuestion();
-        questionBox.textContent = data.q.words + " = ?";
-        resetInput();
-        data.hadTrustedKeydowns = 0;
-        data.keyEvents = [];
-        data.pointerInteracted = false;
-        data.firstKeystrokeAt = 0;
-        data.lastKeystrokeAt = 0;
-        data.pasted = false;
-        hint.textContent = "";
-      }
-
-      // Обработчики событий
-      btn.addEventListener("click", tryCheck);
-      input.addEventListener("keydown", function(e){
-        if(e.key === "Enter") tryCheck();
-      });
-
-      // Фокусировка на поле ввода
-      setTimeout(function(){ 
-        input.focus(); 
-      }, 100);
-    }
-  });
-})(window, document);
+      input.style.cssText = "padding:12px 16px;border-radius:8px;border:2px solid #ddd;font-size:16px;width:150px;text-align
