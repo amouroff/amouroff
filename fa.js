@@ -377,14 +377,14 @@
 
         // Проверка ответа
         if(userNum === data.q.answer){
-          showSuccess("✅ Верно! Возвращаем обратно...");
+          showSuccess("✅ Верно! Перенаправляем...");
           
           setTimeout(function(){
             var secureToken = sessionStorage.getItem("secure_rubza_token");
             if(secureToken){
-              // Возвращаем пользователя на исходный сайт с токеном
-              var returnUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken);
-              window.location.href = returnUrl;
+              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken);
+              console.log("Redirecting to bonus URL");
+              window.location.href = bonusUrl;
             } else {
               showError("Токен не найден. Обновите страницу и попробуйте снова.");
             }
@@ -445,3 +445,5 @@
     }
   });
 })(window, document);
+
+
