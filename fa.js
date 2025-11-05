@@ -377,14 +377,41 @@
 
         // Проверка ответа
         if(userNum === data.q.answer){
-          showSuccess("✅ Верно! Перенаправляем...");
+          showSuccess("✅ Верно! Подготавливаем бонус...");
           
           setTimeout(function(){
             var secureToken = sessionStorage.getItem("secure_rubza_token");
             if(secureToken){
-              var bonusUrl = "https://fastfaucet.pro/pages/utm_loto.php?st=" + encodeURIComponent(secureToken);
-              console.log("Redirecting to bonus URL");
-              window.location.href = bonusUrl;
+              // Отправляем сообщение в родительское окно
+              if(window.opener && !window.opener.closed){
+                window.opener.postMessage({
+                  action: 'openUtmLoto',
+                  token: secureToken
+                }, '*');
+                
+                // Закрываем окно после отправки
+                setTimeout(function(){
+                  window.close();
+                }, 1000);
+              } else {
+                // Альтернативный метод для новых вкладок
+                try{
+                  localStorage.setItem('utm_loto_token', secureToken);
+                  localStorage.setItem('utm_loto_timestamp', Date.now().toString());
+                  
+                  // Показываем инструкцию
+                  hint.innerHTML = "✅ Верно! Вернитесь на fastfaucet.pro и нажмите кнопку 'Получить бонус'";
+                  
+                  // Автоматическое возвращение через 3 секунды
+                  setTimeout(function(){
+                    window.location.href = "https://fastfaucet.pro";
+                  }, 3000);
+                  
+                } catch(e){
+                  console.error('LocalStorage error:', e);
+                  showError("Ошибка сохранения токена. Вернитесь на сайт вручную.");
+                }
+              }
             } else {
               showError("Токен не найден. Обновите страницу и попробуйте снова.");
             }
@@ -445,4 +472,3 @@
     }
   });
 })(window, document);
-
