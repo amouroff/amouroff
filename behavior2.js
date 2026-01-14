@@ -1,25 +1,25 @@
 (function () {
 
   /* ===============================
-     UTM CHECK
+     СТРОГАЯ ПРОВЕРКА UTM
   =============================== */
   var params = new URLSearchParams(window.location.search);
 
-  // Расширенная проверка UTM (добавим поддержку разных вариантов)
+  // Точное совпадение с требуемыми UTM-метками
   var utmSource = params.get('utm_source');
   var utmMedium = params.get('utm_medium');
   var utmCampaign = params.get('utm_campaign');
   
-  // Проверка по более широким критериям
-  var validTraffic = (
-    (utmSource && utmSource.match(/click|under|pop|traffic|push|ads/i)) ||
-    (utmMedium && utmMedium.match(/click|under|pop|cpc|cpm|push/i)) ||
-    (utmCampaign && utmCampaign.match(/clickunder|popunder|advert|promo|traffic/i)) ||
-    (!utmSource && !utmMedium && !utmCampaign) // Если нет UTM, тоже считаем нашим
+  // Проверяем точное совпадение всех трех параметров
+  var isValidTraffic = (
+    utmSource === 'yandex' &&
+    utmMedium === 'organic' &&
+    utmCampaign === 'promo'
   );
 
-  if (!validTraffic) {
-    return; // ❌ не наши — валим
+  // Если UTM не совпадают - выходим
+  if (!isValidTraffic) {
+    return; // ❌ не наши UTM — выходим
   }
 
   /* ===============================
