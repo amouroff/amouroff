@@ -60,7 +60,7 @@
             
             return true;
         } catch (error) {
-            console.error('Ошибка при клике по баннеру:', error);
+            console.error('Ошибка:', error);
             return false;
         }
     }
