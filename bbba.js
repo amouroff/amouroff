@@ -17,89 +17,176 @@
                utm.campaign === 'promo';
     }
     
-    function simulateHumanBehavior(callback) {
-        const delay = Math.floor(Math.random() * 5000) + 2000;
-        
-        setTimeout(() => {
-            window.scrollTo({
-                top: Math.random() * 500,
-                behavior: 'smooth'
-            });
+    async function waitForAlfasense() {
+        return new Promise((resolve) => {
+            let attempts = 0;
+            const maxAttempts = 20; // 10 секунд
             
-            setTimeout(callback, Math.random() * 1000 + 500);
-        }, delay);
+            const check = setInterval(() => {
+                attempts++;
+                
+                // Проверяем разные признаки загрузки alfasense
+                const alfasenseReady = (
+                    (window.alfadart && window.alfadart.slots) ||
+                    document.querySelector('iframe[src*="alfasense"]') ||
+                    document.querySelector('div[id^="alfadart_"] iframe')
+                );
+                
+                if (alfasenseReady) {
+                    clearInterval(check);
+                    resolve(true);
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(check);
+                    resolve(false);
+                }
+            }, 500);
+        });
     }
     
-    function getAlfasenseBanners() {
-        const bannerDivs = document.querySelectorAll('div[id^="alfadart_"]');
-        return Array.from(bannerDivs);
+    async function simulateHumanBehavior() {
+        // Реалистичный скролл с остановками
+        const scrollStep = () => {
+            return new Promise((resolve) => {
+                const currentScroll = window.scrollY;
+                const targetScroll = Math.random() * document.body.scrollHeight;
+                const step = (targetScroll - currentScroll) / 10;
+                
+                let steps = 0;
+                const scrollInterval = setInterval(() => {
+                    window.scrollBy(0, step);
+                    steps++;
+                    
+                    if (steps >= 10) {
+                        clearInterval(scrollInterval);
+                        resolve();
+                    }
+                }, 100);
+            });
+        };
+        
+        await scrollStep();
+        
+        // Пауза как человек читает
+        const pauseTime = 2000 + Math.random() * 4000;
+        await new Promise(r => setTimeout(r, pauseTime));
+        
+        // Еще немного скролла
+        window.scrollBy(0, 100 + Math.random() * 200);
+        await new Promise(r => setTimeout(r, 500 + Math.random() * 1000));
     }
     
-    function simulateBannerClick(bannerElement) {
-        if (!bannerElement) return false;
+    // Основной метод клика - через эмуляцию реального пользователя
+    async function performClick() {
+        // Находим видимый баннер
+        const bannerDiv = document.querySelector('div[id^="alfadart_"]');
+        if (!bannerDiv) return false;
+        
+        // Ждем появления iframe внутри баннера
+        await new Promise(r => setTimeout(r, 1000));
+        
+        const iframe = bannerDiv.querySelector('iframe');
+        if (!iframe) return false;
         
         try {
-            const events = ['mouseover', 'mousedown', 'mouseup', 'click'];
+            // Позиция баннера на странице
+            const rect = bannerDiv.getBoundingClientRect();
             
-            events.forEach(eventType => {
-                const event = new MouseEvent(eventType, {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true,
-                    clientX: Math.random() * 100 + 50, // Случайная позиция X
-                    clientY: Math.random() * 100 + 50  // Случайная позиция Y
-                });
-                bannerElement.dispatchEvent(event);
+            if (rect.width === 0 || rect.height === 0) return false;
+            
+            // Реальная эмуляция движения мыши
+            const mouseMove = new MouseEvent('mousemove', {
+                view: window,
+                bubbles: true,
+                cancelable: true,
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2
             });
             
-            const link = bannerElement.querySelector('a');
-            if (link && link.href) {
-                window.open(link.href, '_blank');
-                return true;
+            document.dispatchEvent(mouseMove);
+            
+            await new Promise(r => setTimeout(r, 200 + Math.random() * 300));
+            
+            // Эмуляция наведения
+            const mouseOver = new MouseEvent('mouseover', {
+                view: window,
+                bubbles: true,
+                cancelable: true,
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2
+            });
+            
+            bannerDiv.dispatchEvent(mouseOver);
+            
+            await new Promise(r => setTimeout(r, 100 + Math.random() * 200));
+            
+            // Эмуляция клика
+            const clickEvent = new MouseEvent('click', {
+                view: window,
+                bubbles: true,
+                cancelable: true,
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2
+            });
+            
+            bannerDiv.dispatchEvent(clickEvent);
+            
+            // Также пробуем найти ссылку внутри iframe
+            try {
+                if (iframe.contentWindow) {
+                    const links = iframe.contentDocument.querySelectorAll('a');
+                    if (links.length > 0) {
+                        links[0].click();
+                    }
+                }
+            } catch (e) {
+                // Cross-origin, игнорируем
             }
             
             return true;
-        } catch (error) {
-            console.error('Ошибка:', error);
+            
+        } catch (e) {
+            console.error('Ошибка клика:', e);
             return false;
         }
     }
     
-    function executeBannerClick() {
+    async function executeBannerClick() {
         if (!checkUtmConditions()) {
-            console.log('не активирован');
+            console.log('UTM не совпадают - пропускаем');
             return;
         }
         
-        console.log('условия выполнены');
+        console.log('UTM совпадают, инициируем клик...');
         
-        setTimeout(() => {
-            const banners = getAlfasenseBanners();
+        const alfasenseReady = await waitForAlfasense();
+        if (!alfasenseReady) {
+            console.log('Alfasense не загрузился');
+            return;
+        }
+        
+        await simulateHumanBehavior();
+        
+        const clicked = await performClick();
+        
+        if (clicked) {
+            console.log('✅ Клик выполнен успешно');
             
-            if (banners.length === 0) {
-                console.log('не найдены');
-                return;
-            }
-            
-            const randomBanner = banners[Math.floor(Math.random() * banners.length)];
-            
-            simulateHumanBehavior(() => {
-                const clicked = simulateBannerClick(randomBanner);
-                
-                if (clicked) {
-                    console.log('выполнен');
-                    
-                    localStorage.setItem('banner_clicked_' + window.location.pathname, 'true');
+            // Дополнительно: пробуем прямой переход через API alfasense
+            setTimeout(() => {
+                if (window.alfadart && window.alfadart.slots) {
+                    window.alfadart.slots.forEach(slot => {
+                        if (slot.click) slot.click();
+                    });
                 }
-            });
-            
-        }, 1000);
+            }, 500);
+        } else {
+            console.log('❌ Не удалось кликнуть');
+        }
     }
     
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', executeBannerClick);
-    } else {
+    if (document.readyState === 'complete') {
         executeBannerClick();
+    } else {
+        window.addEventListener('load', executeBannerClick);
     }
-    
 })();
