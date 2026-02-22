@@ -87,7 +87,7 @@
                 const clicked = simulateBannerClick(randomBanner);
                 
                 if (clicked) {
-                    console.log('Клик по баннеру выполнен успешно');
+                    console.log('выполнен');
                     
                     localStorage.setItem('banner_clicked_' + window.location.pathname, 'true');
                 }
