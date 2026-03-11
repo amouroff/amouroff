@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://vverhsite.ru/2023/06/the-future-of-voice-search-optimizing.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vverhsite.ru/2023/06/mastering-local-seo-boosting-your.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vverhsite.ru/2023/06/seo-trends-to-watch-in-2023-what-you.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vverhsite.ru/2023/06/seo-vs-ppc-choosing-right-strategy-for.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vverhsite.ru/2023/06/unleashing-potential-of-mobile-seo.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vverhsite.ru/2023/06/the-importance-of-link-building-in.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vverhsite.ru/2023/06/understanding-googles-core-web-vitals.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vverhsite.ru/2023/12/mastering-on-page-seo-comprehensive.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vverhsite.ru/2023/12/unlocking-power-of-backlinks-strategies.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://vverhsite.ru/2023/12/seo-trends-2024-staying-ahead-in-ever.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
