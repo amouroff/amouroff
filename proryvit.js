@@ -33,7 +33,6 @@
 	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
 	"https://fastfaucet.pro/newalfa4/optimizeds.php",
 	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
 	"https://fastfaucet.pro/newalfa4/tormoshka.php",
 	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
 	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
@@ -122,4 +121,5 @@
         startScript();
     }
 })();
+
 //]]>
