@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://vebma.ru/2023/05/website-design-trends-latest-and.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vebma.ru/2023/05/mastering-seo-strategies-to-boost-your.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vebma.ru/2023/05/the-power-of-content-marketing-how-to.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vebma.ru/2023/05/e-commerce-essentials-tips-and-tricks.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vebma.ru/2023/05/website-security-101-protecting-your.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vebma.ru/2023/05/harnessing-potential-of-social-media.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vebma.ru/2023/05/website-optimization-speeding-up-your.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vebma.ru/2023/05/the-art-of-blogging-techniques-and.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://vebma.ru/2023/05/creating-killer-landing-pages-best.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://vebma.ru/2023/05/navigating-web-hosting-finding-right.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
