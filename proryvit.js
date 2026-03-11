@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://tormoshka.ru/2023/09/fueling-your-performance-athletes-guide.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://tormoshka.ru/2023/09/protein-packed-power-optimizing-muscle.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://tormoshka.ru/2023/09/eating-for-strength-nutrition.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://tormoshka.ru/2023/09/mindful-eating-mental-aspect-of.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://tormoshka.ru/2023/09/superfoods-for-athletes-boosting-health.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://tormoshka.ru/2023/09/meal-prepping-like-pro-simplifying.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://tormoshka.ru/2023/12/mango-tango-delight-refreshing-tropical.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://tormoshka.ru/2023/12/savory-fusion-teriyaki-glazed-salmon.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://tormoshka.ru/2023/12/farm-to-table-bliss-roasted-vegetable.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://tormoshka.ru/2023/12/comfort-food-upgrade-creamy-chicken.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
