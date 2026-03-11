@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://proryvit.ru/2023/09/ai.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://proryvit.ru/2023/09/6g.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://proryvit.ru/2023/09/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://proryvit.ru/2023/09/iot.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://proryvit.ru/2023/09/blog-post_13.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://proryvit.ru/2023/09/xr.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://proryvit.ru/2023/09/blog-post_44.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://proryvit.ru/2023/09/blog-post_67.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://proryvit.ru/2023/09/blog-post_83.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://proryvit.ru/2023/09/blog-post_82.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
