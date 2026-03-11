@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://kuhnyaonline.ru/2023/06/creamy-garlic-parmesan-pasta.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://kuhnyaonline.ru/2023/06/spicy-asian-beef-stir-fry.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://kuhnyaonline.ru/2023/06/lemon-herb-baked-salmon.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://kuhnyaonline.ru/2023/06/crispy-honey-glazed-brussels-sprouts.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://kuhnyaonline.ru/2023/06/tangy-orange-glazed-pork-chops.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://kuhnyaonline.ru/2023/06/decadent-chocolate-lava-cake.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://kuhnyaonline.ru/2023/06/refreshing-watermelon-and-feta-salad.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://kuhnyaonline.ru/2023/12/savory-delight-herb-crusted-salmon-with.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://kuhnyaonline.ru/2023/12/homemade-pasta-perfection-classic.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://kuhnyaonline.ru/2023/12/spice-up-your-night-authentic-chicken.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
