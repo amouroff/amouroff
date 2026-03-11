@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://ecominds.ru/2025/02/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://ecominds.ru/2025/02/blog-post_21.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://ecominds.ru/2025/02/blog-post_58.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://ecominds.ru/2025/02/blog-post_34.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://ecominds.ru/2025/02/blog-post_85.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://ecominds.ru/2025/02/blog-post_88.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://ecominds.ru/2025/02/blog-post_13.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://ecominds.ru/2025/02/blog-post_39.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://ecominds.ru/2025/02/blog-post_40.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://ecominds.ru/2025/02/blog-post_28.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,4 +119,5 @@
 })();
 
 //]]>
+
 
