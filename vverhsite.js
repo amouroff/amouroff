@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://gidrossii.ru/2024/09/10.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://gidrossii.ru/2024/09/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://gidrossii.ru/2024/09/blog-post_26.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://gidrossii.ru/2024/09/blog-post_73.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://gidrossii.ru/2024/09/blog-post_34.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://gidrossii.ru/2024/09/blog-post_79.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://gidrossii.ru/2024/09/blog-post_14.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://gidrossii.ru/2024/09/blog-post_59.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://gidrossii.ru/2024/09/blog-post_4.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://gidrossii.ru/2024/09/blog-post_39.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
