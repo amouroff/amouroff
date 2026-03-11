@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://perviyshagi.ru/2023/05/10-steps-to-successfully-launching-your.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://perviyshagi.ru/2023/05/the-ultimate-guide-to-finding-your.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://perviyshagi.ru/2023/05/the-importance-of-market-research-for.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://perviyshagi.ru/2023/05/funding-your-startup-comprehensive.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://perviyshagi.ru/2023/05/building-strong-business-plan-key.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://perviyshagi.ru/2023/05/effective-marketing-strategies-for.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://perviyshagi.ru/2023/05/navigating-legal-and-regulatory.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://perviyshagi.ru/2023/05/hiring-right-team-recruiting-and.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://perviyshagi.ru/2023/05/scaling-up-your-business-strategies-for.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://perviyshagi.ru/2023/05/embracing-digital-transformation.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
