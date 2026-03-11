@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://lista4.ru/2023/05/the-ultimate-guide-to-choosing-right.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://lista4.ru/2023/05/exploring-evolution-of-paper-from.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://lista4.ru/2023/05/paper-conservation-101-preserving-and.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://lista4.ru/2023/05/the-art-of-paper-crafting-inspiring.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://lista4.ru/2023/05/choosing-perfect-stationery-tips-for.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://lista4.ru/2023/05/the-environmental-impact-of-paper.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://lista4.ru/2023/05/understanding-paper-weight-and.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://lista4.ru/2023/05/inkjet-or-laser-printing-decoding-best.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://lista4.ru/2023/05/unlocking-mysteries-of-specialty-papers.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://lista4.ru/2023/05/the-science-behind-paper-quality.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
