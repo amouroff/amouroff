@@ -12,16 +12,16 @@
     }
 
     const internalPages = [
-        "https://www.ecominds.ru/2025/02/blog-post.html",
-		"https://www.ecominds.ru/2025/02/blog-post_21.html",
-		"https://www.ecominds.ru/2025/02/blog-post_58.html",
-		"https://www.ecominds.ru/2025/02/blog-post_34.html",
-		"https://www.ecominds.ru/2025/02/blog-post_85.html",
-		"https://www.ecominds.ru/2025/02/blog-post_88.html",
-		"https://www.ecominds.ru/2025/02/blog-post_13.html",
-		"https://www.ecominds.ru/2025/02/blog-post_39.html",
-		"https://www.ecominds.ru/2025/02/blog-post_40.html",
-        "https://www.ecominds.ru/2025/02/blog-post_28.html"
+        "https://www.tvoyastrategiya.ru/2025/02/blog-post.html",
+		"https://www.tvoyastrategiya.ru/2025/02/blog-post_21.html",
+		"https://www.tvoyastrategiya.ru/2025/02/blog-post_54.html",
+		"https://www.tvoyastrategiya.ru/2025/02/blog-post_99.html",
+		"https://www.tvoyastrategiya.ru/2025/02/blog-post_20.html",
+		"https://www.tvoyastrategiya.ru/2025/02/blog-post_25.html",
+		"https://www.tvoyastrategiya.ru/2025/02/5.html",
+		"https://www.tvoyastrategiya.ru/2025/02/2025.html",
+		"https://www.tvoyastrategiya.ru/2025/02/blog-post_36.html",
+        "https://www.tvoyastrategiya.ru/2025/02/2025_21.html"
     ];
 
     const externalLinks = [
@@ -123,3 +123,4 @@
 })();
 
 //]]>
+
