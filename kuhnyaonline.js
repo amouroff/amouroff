@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+    "https://optimizeds.ru/2025/11/seo-2025.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://optimizeds.ru/2025/11/blog-post.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://optimizeds.ru/2025/11/blog-post_16.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://optimizeds.ru/2025/11/blog-post_72.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://optimizeds.ru/2025/11/blog-post_89.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://optimizeds.ru/2025/11/blog-post_78.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://optimizeds.ru/2025/11/blog-post_44.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://optimizeds.ru/2025/11/google.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://optimizeds.ru/2025/11/seo.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://optimizeds.ru/2025/11/blog-post_63.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
