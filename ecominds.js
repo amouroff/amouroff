@@ -38,8 +38,7 @@
 	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
 	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
 	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php",
-    "https://fastfaucet.pro/newalfa4/ecominds.php"
+	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php"
     ];
 
     function getRandomItem(array) {
@@ -122,4 +121,5 @@
         startScript();
     }
 })();
+
 //]]>
