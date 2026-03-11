@@ -28,7 +28,6 @@
     "https://fastfaucet.pro/newalfa4/mybiz24.php",
 	"https://fastfaucet.pro/newalfa4/vebma.php",
 	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
 	"https://fastfaucet.pro/newalfa4/gidrossii.php",
 	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
 	"https://fastfaucet.pro/newalfa4/optimizeds.php",
@@ -122,4 +121,5 @@
         startScript();
     }
 })();
+
 //]]>
