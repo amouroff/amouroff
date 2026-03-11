@@ -25,20 +25,16 @@
     ];
 
     const externalLinks = [
-    "https://fastfaucet.pro/newalfa4/mybiz24.php",
-	"https://fastfaucet.pro/newalfa4/vebma.php",
-	"https://fastfaucet.pro/newalfa4/vverhsite.php",
-	"https://fastfaucet.pro/newalfa4/lista4.php",
-	"https://fastfaucet.pro/newalfa4/gidrossii.php",
-	"https://fastfaucet.pro/newalfa4/kuhnyaonline.php",
-	"https://fastfaucet.pro/newalfa4/optimizeds.php",
-	"https://fastfaucet.pro/newalfa4/smyslu.php",
-	"https://fastfaucet.pro/newalfa4/proryvit.php",
-	"https://fastfaucet.pro/newalfa4/tormoshka.php",
-	"https://fastfaucet.pro/newalfa4/rukovoditelstvo.php",
-	"https://fastfaucet.pro/newalfa4/perviyshagi.php",
-	"https://fastfaucet.pro/newalfa4/bythack.php",
-	"https://fastfaucet.pro/newalfa4/tvoyastrategiya.php"
+    "https://rukovoditelstvo.ru/2023/05/unlocking-power-of-diversity-strategies.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://rukovoditelstvo.ru/2023/05/the-art-of-effective-leadership.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://rukovoditelstvo.ru/2023/05/navigating-digital-era-harnessing.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://rukovoditelstvo.ru/2023/05/sustainable-business-practices-building.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://rukovoditelstvo.ru/2023/05/creating-culture-of-innovation.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://rukovoditelstvo.ru/2023/05/building-strong-customer-relationships.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://rukovoditelstvo.ru/2023/05/mastering-art-of-negotiation-strategies.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://rukovoditelstvo.ru/2023/05/the-future-of-work-adapting-to-changing.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+	"https://rukovoditelstvo.ru/2023/05/strategic-marketing-in-digital-age.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo",
+    "https://rukovoditelstvo.ru/2023/05/the-importance-of-emotional.html?utm_source=yandex&utm_medium=organic&utm_campaign=promo"
     ];
 
     function getRandomItem(array) {
@@ -123,3 +119,4 @@
 })();
 
 //]]>
+
