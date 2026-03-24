@@ -66,7 +66,6 @@
         var keyword = buttonTexts[k].toUpperCase();
         if (btnText === keyword || btnText.includes(keyword)) {
           button = allButtons[j];
-          console.log('Кнопка найдена по тексту:', btnText);
           break;
         }
       }
@@ -101,7 +100,6 @@
               var keyword = buttonTexts[k].toUpperCase();
               if (elText === keyword || elText.includes(keyword)) {
                 button = el;
-                console.log('Кнопка найдена по классу/атрибуту, текст:', elText);
                 break;
               }
             }
@@ -115,8 +113,6 @@
     }
 
     if (button && !agreeButtonFound) {
-      var buttonText = (button.textContent || button.innerText || button.value || '').trim();
-      console.log('Кнопка согласия найдена ("' + buttonText + '"), готовлю клик...');
       agreeButtonFound = true;
 
       // Добавляем задержку перед кликом для реалистичности
@@ -149,18 +145,11 @@
             
             // Дополнительно вызываем нативный click
             button.click();
-            
-            console.log('Кнопка "' + buttonText + '" нажата!');
-            
-            // После клика можно добавить дополнительную логику
-            setTimeout(function() {
-              console.log('Подтверждение принято');
-            }, 1000);
 
           }, 100);
           
         } catch (error) {
-          console.log('Ошибка при клике на кнопку:', error);
+          // Ошибки игнорируются
         }
       }, clickDelay);
     }
@@ -168,8 +157,6 @@
 
   // Запуск проверки кнопки если есть UTM метки
   if (hasUTM) {
-    console.log('UTM метки обнаружены, запускаю мультиязычный мониторинг кнопки согласия...');
-    
     // Немедленная проверка
     findAndClickAgreeButton();
     
@@ -263,7 +250,7 @@
     mouse.style.width = '6px';
     mouse.style.height = '6px';
     mouse.style.borderRadius = '50%';
-    mouse.style.background = 'rgba(0,0,0,0.0)'; // невидимая, но события есть
+    mouse.style.background = 'rgba(0,0,0,0.0)';
     mouse.style.zIndex = '999999';
     mouse.style.pointerEvents = 'none';
     document.body.appendChild(mouse);
