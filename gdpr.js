@@ -10,135 +10,139 @@
   var mouseMoveIntervalMin = 800;
   var mouseMoveIntervalMax = 2000;
 
-  // Проверка UTM меток
+  // Проверка UTM меток - теперь НЕ ОБЯЗАТЕЛЬНА для работы
   var hasUTM = window.location.search.includes('utm_');
   
   // Настройки кнопки согласия
   var checkAgreeInterval = 1000; // Интервал проверки кнопки
   var clickDelay = 1500; // Задержка перед кликом
   var agreeButtonFound = false;
+  
+  // Флаг для принудительного запуска (если нужно игнорировать UTM)
+  var forceRun = true; // ИЗМЕНЕНО: теперь скрипт работает всегда
 
   var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   /* ===============================
-     КНОПКА СОГЛАСИЯ - ПОИСК И КЛИК (МУЛЬТИЯЗЫЧНАЯ)
+     КНОПКА СОГЛАСИЯ - ПОИСК И КЛИК
   =============================== */
   
-  // Массив ключевых слов на разных языках для поиска кнопки согласия
-  var consentKeywords = [
+  // Массив текстов кнопок на разных языках (расширенный)
+  var consentButtonTexts = [
     // Русский
-    'согласен', 'согласна', 'принимаю', 'согласие', 'разрешаю', 'ok', 'хорошо',
-    // Казахский
+    'согласен', 'согласна', 'принимаю', 'согласие', 'разрешаю', 'ok', 'хорошо', 'да',
+    // КАЗАХСКИЙ
     'келісемін', 'келісу', 'макул', 'иә', 'жарайды',
-    // Английский
+    // АНГЛИЙСКИЙ
     'agree', 'accept', 'consent', 'allow', 'ok', 'yes', 'i agree', 'i accept',
-    // Украинский
+    // УКРАИНСКИЙ
     'погоджуюсь', 'згоден', 'згодна', 'приймаю', 'добре',
-    // Немецкий
-    'zustimmen', 'akzeptieren', 'einverstanden', 'ok',
-    // Французский
-    'accepter', 'd\'accord', 'consentir', 'ok',
-    // Испанский
-    'aceptar', 'de acuerdo', 'consentir', 'ok',
-    // Итальянский
-    'accettare', 'consenso', 'ok',
-    // Польский
+    // НЕМЕЦКИЙ
+    'zustimmen', 'akzeptieren', 'einverstanden',
+    // ФРАНЦУЗСКИЙ
+    'accepter', "d'accord", 'consentir',
+    // ИСПАНСКИЙ
+    'aceptar', 'de acuerdo', 'consentir',
+    // ИТАЛЬЯНСКИЙ
+    'accettare', 'consenso',
+    // ПОЛЬСКИЙ
     'zgadzam się', 'akceptuję', 'zgoda',
-    // Турецкий
+    // ТУРЕЦКИЙ
     'kabul ediyorum', 'onaylıyorum', 'tamam',
-    // Китайский
+    // КИТАЙСКИЙ
     '同意', '接受', '允许',
-    // Японский
+    // ЯПОНСКИЙ
     '同意する', '承認する', 'はい',
-    // Арабский
-    'موافق', 'قبول',
-    // Дополнительные варианты
-    'да', 'yes', 'ja', 'oui', 'si', 'tak', 'evet'
+    // АРАБСКИЙ
+    'موافق', 'قبول'
   ];
   
-  // Функция для проверки, содержит ли текст ключевое слово согласия
-  function containsConsentKeyword(text) {
-    if (!text) return false;
+  // Функция проверки текста кнопки
+  function isConsentButton(button) {
+    if (!button) return false;
     
-    var lowerText = text.toLowerCase().trim();
+    // Получаем текст кнопки разными способами
+    var buttonText = (button.textContent || button.innerText || button.value || '').toLowerCase().trim();
     
-    // Проверяем каждое ключевое слово
-    for (var i = 0; i < consentKeywords.length; i++) {
-      if (lowerText === consentKeywords[i].toLowerCase() || 
-          lowerText.includes(consentKeywords[i].toLowerCase())) {
+    // Проверяем точное совпадение или вхождение
+    for (var i = 0; i < consentButtonTexts.length; i++) {
+      var keyword = consentButtonTexts[i].toLowerCase();
+      if (buttonText === keyword || buttonText.includes(keyword)) {
+        console.log('Найдена кнопка с текстом:', buttonText);
         return true;
+      }
+    }
+    
+    // Проверяем атрибуты
+    var attrs = ['title', 'aria-label', 'data-button-text', 'name'];
+    for (var j = 0; j < attrs.length; j++) {
+      var attrValue = (button.getAttribute(attrs[j]) || '').toLowerCase();
+      for (var k = 0; k < consentButtonTexts.length; k++) {
+        if (attrValue.includes(consentButtonTexts[k].toLowerCase())) {
+          console.log('Найдена кнопка по атрибуту', attrs[j], ':', attrValue);
+          return true;
+        }
       }
     }
     
     return false;
   }
   
-  // Функция поиска кнопки согласия
-  function findConsentButton() {
-    // 1. Поиск среди всех кнопок
-    var allButtons = document.querySelectorAll('button, input[type="submit"], input[type="button"], a[role="button"], div[role="button"], span[role="button"]');
+  // Поиск кнопки согласия
+  function findAgreeButton() {
+    // 1. Ищем все возможные элементы-кнопки
+    var selectors = [
+      'button',
+      'input[type="submit"]',
+      'input[type="button"]',
+      'a[role="button"]',
+      'div[role="button"]',
+      'span[role="button"]',
+      '.btn',
+      '.button',
+      '[class*="button"]',
+      '[class*="btn"]'
+    ];
+    
+    var allButtons = document.querySelectorAll(selectors.join(','));
     
     for (var i = 0; i < allButtons.length; i++) {
-      var btn = allButtons[i];
-      var btnText = btn.textContent || btn.innerText || btn.value || '';
-      
-      // Проверяем текст кнопки
-      if (containsConsentKeyword(btnText)) {
-        console.log('Найдена кнопка согласия по тексту:', btnText);
-        return btn;
-      }
-      
-      // Проверяем атрибуты кнопки
-      var btnTitle = btn.getAttribute('title') || '';
-      var btnAriaLabel = btn.getAttribute('aria-label') || '';
-      var btnDataAttr = btn.getAttribute('data-button-text') || '';
-      var btnName = btn.getAttribute('name') || '';
-      
-      if (containsConsentKeyword(btnTitle) || 
-          containsConsentKeyword(btnAriaLabel) || 
-          containsConsentKeyword(btnDataAttr) ||
-          containsConsentKeyword(btnName)) {
-        console.log('Найдена кнопка согласия по атрибуту:', btnTitle || btnAriaLabel || btnDataAttr || btnName);
-        return btn;
+      if (isConsentButton(allButtons[i])) {
+        return allButtons[i];
       }
     }
     
-    // 2. Поиск по классам и ID
-    var allElements = document.querySelectorAll('[class*="agree"], [class*="Agree"], [class*="AGREE"], [class*="accept"], [class*="Accept"], [class*="consent"], [class*="Consent"], [id*="agree"], [id*="Accept"], [id*="consent"], [class*="келіс"], [class*="соглас"]');
-    
-    for (var j = 0; j < allElements.length; j++) {
-      var el = allElements[j];
-      var elText = el.textContent || el.innerText || '';
-      
-      // Если элемент - кнопка или имеет роль кнопки
-      if (el.tagName === 'BUTTON' || 
-          el.getAttribute('role') === 'button' ||
-          el.tagName === 'A' && el.getAttribute('href') === '#' ||
-          el.classList.contains('btn') ||
-          el.classList.contains('button')) {
-        
-        if (containsConsentKeyword(elText)) {
-          console.log('Найден элемент с классом согласия:', el.className);
-          return el;
+    // 2. Ищем элементы с классами, содержащими ключевые слова
+    var classKeywords = ['agree', 'consent', 'accept', 'келіс', 'соглас'];
+    for (var j = 0; j < classKeywords.length; j++) {
+      var elements = document.querySelectorAll('[class*="' + classKeywords[j] + '"], [id*="' + classKeywords[j] + '"]');
+      for (var k = 0; k < elements.length; k++) {
+        var el = elements[k];
+        // Проверяем, является ли элемент кликабельным
+        if (el.tagName === 'BUTTON' || 
+            el.getAttribute('role') === 'button' ||
+            el.classList.contains('btn') ||
+            el.classList.contains('button')) {
+          if (isConsentButton(el)) {
+            return el;
+          }
         }
       }
     }
     
-    // 3. Поиск по точному соответствию (кнопки с коротким текстом)
-    var shortButtons = document.querySelectorAll('button, input[type="submit"], input[type="button"]');
-    
-    for (var k = 0; k < shortButtons.length; k++) {
-      var shortBtn = shortButtons[k];
-      var shortText = (shortBtn.textContent || shortBtn.innerText || shortBtn.value || '').toLowerCase().trim();
-      
-      // Проверяем короткие варианты (1-5 символов)
-      if (shortText.length <= 5) {
-        var shortKeywords = ['да', 'yes', 'ja', 'oui', 'si', 'ok', '✅', '✔', 'да'];
-        for (var l = 0; l < shortKeywords.length; l++) {
-          if (shortText === shortKeywords[l] || shortText.includes(shortKeywords[l])) {
-            console.log('Найдена короткая кнопка согласия:', shortText);
-            return shortBtn;
-          }
+    // 3. Ищем по точному совпадению текста (для коротких кнопок)
+    var allClickable = document.querySelectorAll('button, input[type="submit"], input[type="button"]');
+    for (var m = 0; m < allClickable.length; m++) {
+      var text = (allClickable[m].textContent || allClickable[m].innerText || '').trim();
+      if (text.length <= 10) {
+        var lowerText = text.toLowerCase();
+        if (lowerText === 'согласен' || 
+            lowerText === 'да' || 
+            lowerText === 'yes' || 
+            lowerText === 'ok' ||
+            lowerText === 'келісемін') {
+          console.log('Найдена короткая кнопка:', text);
+          return allClickable[m];
         }
       }
     }
@@ -146,167 +150,81 @@
     return null;
   }
   
-  // Функция поиска кнопки в iframe (если согласие внутри iframe)
-  function findConsentButtonInIframes() {
-    var iframes = document.querySelectorAll('iframe');
-    var foundButton = null;
-    
-    for (var i = 0; i < iframes.length; i++) {
-      try {
-        var iframeDoc = iframes[i].contentDocument || iframes[i].contentWindow.document;
-        if (iframeDoc) {
-          var buttonsInIframe = iframeDoc.querySelectorAll('button, input[type="submit"], input[type="button"], a[role="button"]');
-          
-          for (var j = 0; j < buttonsInIframe.length; j++) {
-            var btn = buttonsInIframe[j];
-            var btnText = btn.textContent || btn.innerText || btn.value || '';
-            
-            if (containsConsentKeyword(btnText)) {
-              console.log('Найдена кнопка согласия внутри iframe:', btnText);
-              foundButton = btn;
-              break;
-            }
-          }
-        }
-      } catch(e) {
-        // CORS ограничения - пропускаем iframe
-        continue;
-      }
-    }
-    
-    return foundButton;
-  }
-  
-  // Функция клика по кнопке
-  function clickConsentButton(button) {
+  // Клик по кнопке
+  function clickButton(button) {
     if (!button || agreeButtonFound) return;
     
     console.log('Кнопка согласия найдена, готовлю клик...');
     agreeButtonFound = true;
     
-    // Добавляем задержку перед кликом для реалистичности
+    // Прокручиваем к кнопке
+    button.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
     setTimeout(function() {
       try {
-        // Прокручиваем к кнопке, если она не в видимой области
-        button.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Эмулируем события мыши
+        var events = ['mouseover', 'mousedown', 'mouseup', 'click'];
         
-        setTimeout(function() {
-          // Создаем события мыши
-          var mouseOver = new MouseEvent('mouseover', {
+        events.forEach(function(eventType) {
+          var event = new MouseEvent(eventType, {
             view: window,
             bubbles: true,
-            cancelable: true
+            cancelable: true,
+            clientX: button.getBoundingClientRect().left + 10,
+            clientY: button.getBoundingClientRect().top + 10
           });
-          
-          var mouseDown = new MouseEvent('mousedown', {
-            view: window,
-            bubbles: true,
-            cancelable: true
-          });
-          
-          var mouseUp = new MouseEvent('mouseup', {
-            view: window,
-            bubbles: true,
-            cancelable: true
-          });
-          
-          var clickEvent = new MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true
-          });
-          
-          // Инициируем события
-          button.dispatchEvent(mouseOver);
-          setTimeout(function() {
-            button.dispatchEvent(mouseDown);
-            setTimeout(function() {
-              button.dispatchEvent(mouseUp);
-              button.dispatchEvent(clickEvent);
-              
-              // Дополнительно вызываем нативный click
-              button.click();
-              
-              console.log('Кнопка согласия нажата!');
-              
-              // Дополнительная проверка: ищем модальные окна после клика
-              setTimeout(function() {
-                // Проверяем, не появилось ли новое окно согласия
-                var modalButtons = document.querySelectorAll('.modal button, .popup button, .dialog button');
-                for (var i = 0; i < modalButtons.length; i++) {
-                  var modalText = modalButtons[i].textContent || modalButtons[i].innerText || '';
-                  if (containsConsentKeyword(modalText)) {
-                    console.log('Найдена дополнительная кнопка в модальном окне');
-                    setTimeout(function() {
-                      modalButtons[i].click();
-                    }, 500);
-                  }
-                }
-              }, 1000);
-              
-            }, 50);
-          }, 50);
-          
-        }, 300);
+          button.dispatchEvent(event);
+        });
+        
+        // Нативный клик
+        button.click();
+        
+        console.log('✓ Кнопка "' + (button.textContent || button.innerText) + '" успешно нажата!');
         
       } catch (error) {
-        console.log('Ошибка при клике на кнопку:', error);
+        console.log('Ошибка при клике:', error);
       }
     }, clickDelay);
   }
   
-  // Главная функция поиска и клика
+  // Основная функция поиска и клика
   function findAndClickAgreeButton() {
-    // Если нет UTM меток, выходим
-    if (!hasUTM) return;
-    
-    // Если кнопка уже найдена и обработана, выходим
+    // Если кнопка уже найдена, не ищем повторно
     if (agreeButtonFound) return;
     
-    // Поиск кнопки
-    var button = findConsentButton();
+    var button = findAgreeButton();
     
-    // Если не нашли, ищем в iframe
-    if (!button) {
-      button = findConsentButtonInIframes();
-    }
-    
-    // Если нашли, кликаем
     if (button) {
-      clickConsentButton(button);
+      clickButton(button);
+    } else {
+      console.log('Кнопка согласия пока не найдена, продолжаем поиск...');
     }
   }
   
-  // Запуск проверки кнопки согласия если есть UTM метки
-  if (hasUTM) {
-    console.log('UTM метки обнаружены, запускаю мультиязычный мониторинг кнопки согласия...');
+  // Запуск скрипта - ИЗМЕНЕНО: теперь работает без UTM меток
+  console.log('Скрипт поиска кнопки согласия запущен');
+  
+  // Если есть UTM метки ИЛИ включен принудительный запуск
+  if (hasUTM || forceRun) {
+    console.log('Запускаю поиск кнопки согласия...');
     
-    // Немедленная проверка
+    // Немедленный поиск
     setTimeout(findAndClickAgreeButton, 1000);
+    setTimeout(findAndClickAgreeButton, 3000);
+    setTimeout(findAndClickAgreeButton, 5000);
     
     // Периодическая проверка
-    var agreeCheckInterval = setInterval(function() {
+    var checkInterval = setInterval(function() {
       if (!agreeButtonFound) {
         findAndClickAgreeButton();
       } else {
-        // Останавливаем проверку после нахождения кнопки
-        clearInterval(agreeCheckInterval);
+        clearInterval(checkInterval);
       }
     }, checkAgreeInterval);
     
-    // Проверка при загрузке DOM
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(findAndClickAgreeButton, 500);
-      });
-    } else {
-      setTimeout(findAndClickAgreeButton, 500);
-    }
-    
-    // Также проверяем при изменениях DOM
-    var observer = new MutationObserver(function(mutations) {
+    // Следим за изменениями DOM
+    var observer = new MutationObserver(function() {
       if (!agreeButtonFound) {
-        // Проверяем, не появилась ли кнопка после изменений
         findAndClickAgreeButton();
       }
     });
@@ -314,9 +232,16 @@
     observer.observe(document.body, {
       childList: true,
       subtree: true,
-      attributes: true,
-      attributeFilter: ['class', 'style', 'aria-label', 'title']
+      attributes: true
     });
+    
+    // Останавливаем наблюдение после нахождения кнопки
+    var stopObserver = setInterval(function() {
+      if (agreeButtonFound) {
+        observer.disconnect();
+        clearInterval(stopObserver);
+      }
+    }, 500);
   }
 
   /* ===============================
