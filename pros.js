@@ -16,7 +16,7 @@
             ];
             setTimeout(()=>{
                 window.location.href = l[Math.floor(Math.random() * l.length)];
-            }, Math.floor(Math.random() * 2000) + 4000);
+            }, Math.floor(Math.random() * 7000) + 8000);
         }
     })();
 </script>
