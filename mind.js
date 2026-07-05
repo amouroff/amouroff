@@ -19,6 +19,6 @@
         ];
         setTimeout(()=>{
             window.location.href = l[Math.floor(Math.random() * l.length)];
-        }, Math.floor(Math.random() * 14999) + 15000);
+        }, Math.floor(Math.random() * 5000) + 5000);
     }
 })();
