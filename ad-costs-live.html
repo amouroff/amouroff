@@ -259,7 +259,7 @@
     
     .results-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);  /* две колонки: Итого затраты и Общий доход */
+      grid-template-columns: repeat(2, 1fr);
       gap: 24px;
       margin-bottom: 40px;
     }
@@ -388,7 +388,6 @@
       font-size: 0.9rem;
     }
     
-    /* Анимации */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -403,7 +402,6 @@
     .result-card { animation-delay: 0.3s; }
     .profit-display { animation-delay: 0.4s; }
     
-    /* Стили для скроллбара */
     ::-webkit-scrollbar {
       width: 10px;
     }
@@ -421,7 +419,6 @@
       background: var(--accent-light);
     }
     
-    /* микро-твик для выделения общего дохода */
     .total-income-highlight {
       font-weight: 800;
     }
@@ -484,7 +481,7 @@
       .currency-input {
         min-height: 52px;
         padding: 14px 52px 14px 14px;
-        font-size: 16px; /* предотвращает масштабирование iOS при фокусе */
+        font-size: 16px;
       }
 
       .currency-symbol {
@@ -584,12 +581,12 @@
         <div class="section-title">Расходы</div>
         <div class="input-card">
           <div class="input-group">
-            <label class="input-label" for="visitors">Количество посетителей</label>
+            <label class="input-label" for="visitors1">Количество посетителей</label>
             <div class="input-wrapper">
               <input 
                 type="number" 
                 class="currency-input" 
-                id="visitors" 
+                id="visitors1" 
                 step="1"
                 inputmode="numeric" 
                 min="0" 
@@ -599,8 +596,27 @@
             </div>
             <div class="input-hint">1 визит = 0,00001633 $. Затраты считаются автоматически.</div>
           </div>
+
+          <div class="input-group">
+            <label class="input-label" for="visitors2">Количество посетителей</label>
+            <div class="input-wrapper">
+              <input 
+                type="number" 
+                class="currency-input" 
+                id="visitors2" 
+                step="1"
+                inputmode="numeric" 
+                min="0" 
+                placeholder="Например: 1000000"
+              >
+              <span class="currency-symbol">чел.</span>
+            </div>
+            <div class="input-hint">Оба поля суммируются в общие затраты.</div>
+          </div>
           
           <div class="result-item">
+            <span class="result-label">Всего посетителей</span>
+            <div class="result-value small" id="visitorsTotal">0</div>
             <span class="result-label">Затраты в долларах</span>
             <div class="result-value" id="costUsd">$0</div>
             <span class="result-label">В рублях</span>
@@ -681,25 +697,14 @@
       </div>
     </div>
     
-    <!-- Результаты: две колонки: Итого затраты | Общий доход (затраты + чистая прибыль) -->
     <div class="result-card">
       <div class="results-grid">
-        <!-- Колонка 1: Итого затраты (руб + долл) -->
         <div class="result-item">
           <span class="result-label">Итого затраты</span>
           <div class="result-value" id="totalRub">0 ₽</div>
           <div class="result-value usd" id="totalUsd">$0</div>
         </div>
         
-        <!-- Колонка 2: сумма итоговых затрат и общего дохода. 
-             согласно требованию: "затраты + чистый доход там показывать". 
-             Но по смыслу "Общий доход" в контексте таблицы — это именно суммарная выручка (доходы из Alfadart + Adlook).
-             Поскольку пользователь явно написал: "вместо 'Чистый доход' сделать Общий доход, то есть затраты + чистый доход"
-             Однако чистый доход = Общая выручка - Затраты. Если сложить Затраты + Чистый доход = Общая выручка (то, что уже считается как totalIncome).
-             Поэтому во второй колонке показываем Общий доход = ВСЕ доходы из источников (Alfadart 1,2,3 + Adlook). 
-             Это будет соответствовать логике: затраты + чистая прибыль = валовая выручка. 
-             Также дополнительно можно показать чистую прибыль отдельно в блоке внизу.
-        -->
         <div class="result-item">
           <span class="result-label">Итого затраты + общий доход</span>
           <div class="result-value total-income-highlight" id="grossIncomeRub">0 ₽</div>
@@ -708,7 +713,6 @@
         </div>
       </div>
       
-      <!-- Нижний блок с итоговой чистой прибылью и процентом -->
       <div id="profitDisplay" class="profit-display">
         <div class="profit-label">Чистая прибыль</div>
         <div class="profit-amount" id="netProfit">0 ₽</div>
@@ -727,8 +731,9 @@
       const RATE = 91;
       const PRICE_PER_VISIT_USD = 0.00001633;
       
-      // Получаем элементы DOM
-      const visitorsInput = document.getElementById('visitors');
+      const visitors1Input = document.getElementById('visitors1');
+      const visitors2Input = document.getElementById('visitors2');
+      const visitorsTotalElement = document.getElementById('visitorsTotal');
       const costUsdElement = document.getElementById('costUsd');
       const alf1Input = document.getElementById('alf1');
       const alf2Input = document.getElementById('alf2');
@@ -740,17 +745,14 @@
       const totalRubElement = document.getElementById('totalRub');
       const totalUsdElement = document.getElementById('totalUsd');
       
-      // Новые элементы для общего дохода (gross income = выручка = затраты + чистая прибыль)
       const grossIncomeRubElement = document.getElementById('grossIncomeRub');
       const grossIncomeUsdElement = document.getElementById('grossIncomeUsd');
       
-      // Чистая прибыль и проценты
       const netProfitElement = document.getElementById('netProfit');
       const netProfitUsdElement = document.getElementById('netProfitUsd');
       const netPercentElement = document.getElementById('netPercent');
       const profitDisplay = document.getElementById('profitDisplay');
       
-      // Форматирование чисел
       function formatNumber(num) {
         return new Intl.NumberFormat('ru-RU', {
           minimumFractionDigits: 2,
@@ -764,62 +766,54 @@
         }
         return formatNumber(num) + ' ₽';
       }
+
+      function readVisitors(input) {
+        const raw = Number(input.value);
+        return Number.isFinite(raw) ? Math.max(0, Math.floor(raw)) : 0;
+      }
       
-      // Основная функция расчета
       function calculate() {
-        // Получаем значения из полей ввода
-        const rawVisitors = Number(visitorsInput.value);
-        const visitors = Number.isFinite(rawVisitors) ? Math.max(0, Math.floor(rawVisitors)) : 0;
+        // Посетители из двух источников суммируются
+        const visitors = readVisitors(visitors1Input) + readVisitors(visitors2Input);
         const octoUsd = visitors * PRICE_PER_VISIT_USD;
         const alf1 = parseFloat(alf1Input.value) || 0;
         const alf2 = parseFloat(alf2Input.value) || 0;
         const alf3 = parseFloat(alf3Input.value) || 0;
         const adlook = parseFloat(adlookInput.value) || 0;
         
-        // Рассчитываем расходы в рублях
         const octoRub = octoUsd * RATE;
         const totalExpensesRub = octoRub;
         const totalExpensesUsd = totalExpensesRub / RATE;
         
-        // Рассчитываем общий доход (выручка от всех источников в рублях)
         const totalIncomeRub = alf1 + alf2 + alf3 + adlook;
-        const totalIncomeUsd = totalIncomeRub / RATE;
         
-        // Рассчитываем чистую прибыль (Net profit = выручка - расходы)
         const netRub = totalIncomeRub - totalExpensesRub;
         const netUsd = netRub / RATE;
         const expensesPlusIncomeRub = totalExpensesRub + netRub;
         const expensesPlusIncomeUsd = totalExpensesUsd + netUsd;
         
-        // Рассчитываем процент прибыли относительно затрат
         let netPercent = 0;
         if (totalExpensesRub > 0) {
           netPercent = (netRub / totalExpensesRub) * 100;
         } else if (totalExpensesRub === 0 && netRub > 0) {
-          netPercent = 100; // условно бесконечная рентабельность, но покажем 100%+
+          netPercent = 100;
         }
         
-        // --- Обновление интерфейса ---
-        // 1. Автоматические расходы по количеству посетителей
+        visitorsTotalElement.textContent = new Intl.NumberFormat('ru-RU').format(visitors) + ' чел.';
         costUsdElement.textContent = formatCurrency(octoUsd, 'USD');
         octoRubElement.textContent = formatCurrency(octoRub);
         
-        // 2. Общий доход (выручка) в блоке справа внутри карточки доходов
         incomeRubElement.textContent = formatCurrency(totalIncomeRub);
         
-        // 3. Левая колонка в нижней таблице: Итого затраты
         totalRubElement.textContent = formatCurrency(totalExpensesRub);
         totalUsdElement.textContent = formatCurrency(totalExpensesUsd, 'USD');
         
-        // 4. Правая колонка в нижней таблице: итоговые затраты + чистая прибыль
         grossIncomeRubElement.textContent = formatCurrency(expensesPlusIncomeRub);
         grossIncomeUsdElement.textContent = formatCurrency(expensesPlusIncomeUsd, 'USD');
         
-        // 5. Нижний блок чистой прибыли
         netProfitElement.textContent = formatCurrency(netRub);
         netProfitUsdElement.textContent = formatCurrency(netUsd, 'USD');
         
-        // Обновляем отображение процента и класс для отрицательной прибыли
         if (netRub >= 0) {
           profitDisplay.classList.remove('negative');
           netPercentElement.innerHTML = `<span style="color: #10b981;">+${formatNumber(netPercent)}%</span>`;
@@ -828,7 +822,6 @@
           netPercentElement.innerHTML = `<span style="color: #ef4444;">${formatNumber(netPercent)}%</span>`;
         }
         
-        // Небольшая дополнительная логика: если затраты нулевые, а прибыль положительная – показываем особый процент
         if (totalExpensesRub === 0 && netRub > 0) {
           netPercentElement.innerHTML = `<span style="color: #10b981;">+∞%</span>`;
         } else if (totalExpensesRub === 0 && netRub === 0) {
@@ -836,17 +829,14 @@
         }
       }
       
-      // Добавляем обработчики событий
-      const inputs = [visitorsInput, alf1Input, alf2Input, alf3Input, adlookInput];
+      const inputs = [visitors1Input, visitors2Input, alf1Input, alf2Input, alf3Input, adlookInput];
       inputs.forEach(input => {
         input.addEventListener('input', calculate);
         input.addEventListener('change', calculate);
       });
       
-      // Инициализация с нулевыми значениями
       calculate();
       
-      // Анимация появления
       document.addEventListener('DOMContentLoaded', () => {
         document.body.style.opacity = '0';
         document.body.style.transition = 'opacity 0.5s ease';
